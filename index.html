@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<title>２陸技 無線工学A 合格アプリ</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --card2:#273449; --ink:#e2e8f0; --sub:#94a3b8;
+    --accent:#38bdf8; --good:#22c55e; --bad:#ef4444; --warn:#f59e0b; --line:#334155;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:-apple-system,"Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;
+    padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+  header{position:sticky;top:0;background:linear-gradient(180deg,#0f172a,#0f172af2);
+    padding:calc(12px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line);z-index:10}
+  h1{font-size:17px;margin:0}
+  .sub{color:var(--sub);font-size:12px;margin-top:2px}
+  main{max-width:680px;margin:0 auto;padding:14px}
+  .tabbar{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0b1220;
+    border-top:1px solid var(--line);z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+  .tabbar button{flex:1;background:none;border:none;color:var(--sub);padding:9px 2px 10px;
+    font-size:10.5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:54px}
+  .tabbar button .ico{font-size:21px}
+  .tabbar button.on{color:var(--accent)}
+  .panel{display:none;animation:fade .2s}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+  .box h2{font-size:15px;margin:0 0 8px}
+  .pill{display:inline-block;background:var(--card2);color:var(--accent);border:1px solid var(--line);
+    border-radius:999px;padding:3px 10px;font-size:12px;margin:3px 4px 3px 0}
+  .big{font-size:28px;font-weight:700}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{flex:1;min-width:88px;text-align:center;background:var(--card2);border-radius:12px;padding:12px 6px}
+  .stat .l{font-size:11px;color:var(--sub)}
+  button.act{background:var(--accent);color:#062536;border:none;border-radius:12px;
+    padding:14px 16px;font-size:15px;font-weight:700;cursor:pointer;width:100%;min-height:48px}
+  button.ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
+  button.danger{background:#7f1d1d;color:#fecaca;border:1px solid var(--bad)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+  .chip{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:999px;
+    padding:8px 13px;font-size:13px;cursor:pointer;user-select:none;min-height:38px;display:flex;align-items:center}
+  .chip.on{background:var(--accent);color:#062536;border-color:var(--accent);font-weight:700}
+  .chip.mode.on{background:var(--warn);border-color:var(--warn)}
+  /* flashcard */
+  .fc{perspective:1200px;margin-top:8px}
+  .fc-inner{position:relative;min-height:250px;transition:transform .45s;transform-style:preserve-3d;cursor:pointer}
+  .fc.flip .fc-inner{transform:rotateY(180deg)}
+  .fc-face{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);
+    border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+  .fc-back{transform:rotateY(180deg);background:#15233b}
+  .tag{font-size:11px;color:var(--accent);font-weight:700;margin-bottom:8px}
+  .tag .rec{color:var(--warn)}
+  .q{font-size:15.5px}
+  .a-label{font-size:14px;color:var(--good);font-weight:700;margin-bottom:6px}
+  .expl{font-size:13.5px;color:var(--ink);margin-top:6px}
+  .kime{margin-top:10px;background:#3b2a00;border:1px solid var(--warn);border-radius:10px;
+    padding:8px 10px;font-size:13px;color:#fde68a}
+  .kime b{color:#fff}
+  .tipbox{margin-top:8px;background:#062f25;border:1px solid var(--good);border-radius:10px;
+    padding:8px 10px;font-size:13px;color:#bbf7d0}
+  .tipbox b{color:#fff}
+  .navbtns{display:flex;gap:10px;margin-top:12px}
+  .navbtns button{flex:1}
+  .counter{text-align:center;color:var(--sub);font-size:12px;margin-top:8px}
+  /* quiz */
+  .opt{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);
+    color:var(--ink);border-radius:12px;padding:13px 14px;margin:8px 0;font-size:14.5px;cursor:pointer;min-height:48px}
+  .opt:hover{border-color:var(--accent)}
+  .opt.correct{background:#0f3d22;border-color:var(--good)}
+  .opt.wrong{background:#3d1414;border-color:var(--bad)}
+  .opt.disabled{cursor:default;opacity:.9}
+  .feedback{margin-top:10px;font-size:14px;border-radius:12px;padding:12px}
+  .feedback.ok{background:#0f3d22;border:1px solid var(--good)}
+  .feedback.ng{background:#3d1414;border:1px solid var(--bad)}
+  /* freq bars */
+  .bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+  .bar .name{width:128px;flex-shrink:0}
+  .bar .track{flex:1;background:var(--card2);border-radius:6px;overflow:hidden;height:16px}
+  .bar .fill{height:100%;background:linear-gradient(90deg,#38bdf8,#6366f1)}
+  .bar .val{width:44px;text-align:right;color:var(--sub)}
+  .recur{border-left:3px solid var(--accent);padding:6px 0 6px 12px;margin:10px 0}
+  .recur .n{color:var(--warn);font-weight:700;font-size:13px}
+  .recur .t{font-size:14px}
+  .recur .y{color:var(--sub);font-size:11px}
+  .trick{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+  .trick .h{color:var(--accent);font-weight:700;font-size:14px;margin-bottom:4px}
+  .muted{color:var(--sub);font-size:12px}
+  a{color:var(--accent)}
+  /* slot map */
+  .slot{display:flex;gap:10px;align-items:flex-start;background:var(--card2);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;margin:8px 0}
+  .slot .no{font-weight:700;color:var(--warn);min-width:46px;font-size:14px}
+  .slot .body{flex:1;font-size:13.5px}
+  .slot .hit{color:var(--sub);font-size:11px}
+  .slot.hot{border-color:var(--warn)}
+  /* mock */
+  .mockbar{height:8px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px 0}
+  .mockbar .fill{height:100%;background:var(--accent);transition:width .3s}
+  .verdict{text-align:center;padding:18px;border-radius:14px;margin:12px 0;font-size:18px;font-weight:700}
+  .verdict.pass{background:#0f3d22;border:1px solid var(--good)}
+  .verdict.fail{background:#3d1414;border:1px solid var(--bad)}
+  .mini-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:8px}
+  .mini-table td,.mini-table th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+  .wrongitem{background:var(--card2);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:13.5px}
+  .wrongitem .qq{font-weight:600}
+  .wrongitem .aa{color:var(--good);margin-top:4px}
+  details{margin:10px 0}
+  summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent);padding:6px 0}
+  .matome-item{padding:8px 10px;border-left:3px solid var(--warn);background:var(--card2);
+    border-radius:0 8px 8px 0;margin:8px 0;font-size:13.5px}
+  .matome-item .ttl{font-weight:700;color:var(--warn);margin-bottom:4px}
+  .matome-item .formula{font-size:14px;margin-bottom:4px}
+  .matome-item .ex{color:var(--sub);font-size:12.5px;border-top:1px dashed var(--line);
+    margin-top:6px;padding-top:5px}
+  .matome-item .ex b{color:var(--good)}
+  /* B問題 */
+  .bsel{width:100%;background:var(--card2);color:var(--ink);border:1px solid var(--line);
+    border-radius:10px;padding:11px;font-size:14px;margin:4px 0;-webkit-appearance:none}
+  .bblank{font-weight:700;color:var(--warn)}
+  .bitem{margin:12px 0;font-size:14px}
+  .tfbtns{display:flex;gap:8px;margin-top:6px}
+  .tfbtns .opt{flex:1;margin:0;text-align:center}
+  .opt.sel{border-color:var(--accent);background:#173145}
+</style>
+</head>
+<body>
+<header>
+  <h1>📡 ２陸技 無線工学A 合格アプリ <span class="muted" style="font-weight:400">v2</span></h1>
+  <div class="sub">令和8年7月期ねらい ／ 25問中15問で合格（60%）</div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="panel on" id="p-home">
+    <div class="box" style="text-align:center">
+      <div class="muted">あなたの進捗（この端末に保存）</div>
+      <div class="row" style="margin-top:10px">
+        <div class="stat"><div class="big" id="s-learned">0</div><div class="l">覚えたカード</div></div>
+        <div class="stat"><div class="big" id="s-acc">–</div><div class="l">クイズ正答率</div></div>
+        <div class="stat"><div class="big" id="s-mock">–</div><div class="l">模試ベスト</div></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>🗓 合格までに覚える量</h2>
+      <div class="muted" id="countdown"></div>
+      <div id="roadmap"></div>
+      <p class="muted" style="margin-top:8px">ペース目安：1日10枚（新規＋復習で約1時間）。全105枚を試験までに3周し、模試で75点以上を2回連続で出せたら仕上がり。</p>
+    </div>
+
+    <div class="box">
+      <h2>🎯 合格戦略（実データの結論）</h2>
+      <p style="font-size:14px;margin:6px 0"><b>直近7年・13回分（令和元年7月〜令和7年7月）の過去問を全文解析</b>した結果：</p>
+      <span class="pill">直近3回の試験は25問中19〜22問（約8割）が7年内の再出題</span>
+      <span class="pill">A-10〜11は毎回「電源」2問</span>
+      <span class="pill">ILS・等化器は各5回ほぼ同文</span>
+      <p style="font-size:14px;margin:8px 0">→ <b>7年分の頻出を覚えるだけで合格点（60%）を大きく超える</b>試験です。攻略タブの出題枠マップから優先的に覚えましょう。</p>
+    </div>
+
+    <div class="box">
+      <h2>📅 今日の1時間メニュー</h2>
+      <ol style="font-size:14px;margin:6px 0;padding-left:22px">
+        <li>カードを🔥Lv1から順に10〜20枚（15分）</li>
+        <li>クイズ10問（15分）→ 間違えは「😰苦手」で復習</li>
+        <li>余裕があれば模試（30分）週1回でOK</li>
+      </ol>
+      <button class="act" onclick="go('quiz')">クイズを始める</button>
+      <div class="navbtns">
+        <button class="act ghost" onclick="go('cards')">📇 カード</button>
+        <button class="act ghost" onclick="go('mock')">📋 模試</button>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>📊 頻出TOP（直近7年・13回中）</h2>
+      <div id="home-freq"></div>
+      <button class="act ghost" style="margin-top:10px" onclick="go('study')">出題枠マップ・裏技を見る →</button>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="panel" id="p-cards">
+    <div class="box">
+      <h2>📇 暗記カード <span class="muted" id="bank-count"></span></h2>
+      <div class="muted">表＝問題、タップで裏＝答え。🔁＝過去に繰り返し出題された鉄板。<br>※カードは要点を凝縮した高速ドリル版。本番そのままの文章・形式は、クイズの「🎓本番形式」と模試で練習できます。</div>
+      <div class="chips" id="card-topics"></div>
+      <div class="chips">
+        <div class="chip mode" id="card-l1" onclick="setCardLvl(1)">🔥 Lv1鉄板</div>
+        <div class="chip mode" id="card-l2" onclick="setCardLvl(2)">⭐ Lv2決め打ち</div>
+        <div class="chip mode" id="card-l3" onclick="setCardLvl(3)">📗 Lv3仕上げ</div>
+        <div class="chip mode" id="card-weak" onclick="toggleCardWeak()">😰 苦手</div>
+      </div>
+      <div class="fc" id="fc" onclick="flip()">
+        <div class="fc-inner">
+          <div class="fc-face">
+            <div class="tag" id="fc-tag"></div>
+            <div class="q" id="fc-q"></div>
+            <div class="muted" style="margin-top:14px">タップで答えを見る</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="a-label" id="fc-a"></div>
+            <div class="expl" id="fc-e"></div>
+            <div class="kime" id="fc-k" style="display:none"></div>
+            <div class="tipbox" id="fc-t" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+      <div class="counter" id="fc-count"></div>
+      <div class="navbtns">
+        <button class="act ghost" onclick="prevCard()">← 前</button>
+        <button class="act" onclick="learnCard()">覚えた ✓</button>
+        <button class="act ghost" onclick="nextCard()">次 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="panel" id="p-quiz">
+    <div class="box">
+      <h2>📝 クイズ</h2>
+      <div class="muted">答えるとすぐ解説。間違えた問題は自動で「苦手」に記録されます。</div>
+      <div class="chips" id="quiz-topics"></div>
+      <div class="chips">
+        <div class="chip mode" id="quiz-l1" onclick="setQuizLvl(1)">🔥 Lv1鉄板</div>
+        <div class="chip mode" id="quiz-l2" onclick="setQuizLvl(2)">⭐ Lv2決め打ち</div>
+        <div class="chip mode" id="quiz-l3" onclick="setQuizLvl(3)">📗 Lv3仕上げ</div>
+        <div class="chip mode" id="quiz-weak" onclick="toggleQuizWeak()">😰 苦手</div>
+        <div class="chip mode" id="quiz-exam" onclick="toggleQuizExam()">🎓 本番形式(5択)</div>
+      </div>
+      <div id="quiz-area"></div>
+    </div>
+  </section>
+
+  <!-- MOCK -->
+  <section class="panel" id="p-mock">
+    <div class="box" id="mock-box">
+      <h2>📋 模擬試験</h2>
+      <div id="mock-area"></div>
+    </div>
+  </section>
+
+  <!-- STUDY (攻略) -->
+  <section class="panel" id="p-study">
+    <div class="box">
+      <h2>🗺 出題枠マップ（決め打ち最優先）</h2>
+      <div class="muted" style="margin-bottom:8px">直近7年・13回分（令和元年7月〜令和7年7月）の解析結果。「この問題番号にはコレが出る」の実績。🔥＝特に固定度が高い。</div>
+      <div id="slot-map"></div>
+    </div>
+    <div class="box">
+      <h2>⚡ 直前10分まとめ</h2>
+      <div class="muted">試験直前にこれだけ見返せばOKの決め打ち一覧。</div>
+      <details open><summary>開く / 閉じる</summary><div id="matome"></div></details>
+    </div>
+    <div class="box">
+      <h2>🧮 計算問題はこの型だけ</h2>
+      <div class="muted" style="margin-bottom:6px">本番25問中、計算はおよそ5〜7問。下の型以外の計算は捨ててOK（語句だけでも15問取れる設計）。型はカードの「計算問題」分野とクイズで練習できます。</div>
+      <div class="matome-item">
+        <div class="ttl">① dB計算（利得・減衰）</div>
+        <div class="formula">2倍≒<b>3dB</b>／10倍=<b>10dB</b>／半分=<b>−3dB</b>。複数を通すときは<b>dBどうしを足し算</b>するだけ。</div>
+        <div class="ex">例：2倍アンプ→10倍アンプの順に通す＝3dB＋10dB＝<b>13dB</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">② 変調度 m（AM）</div>
+        <div class="formula">m＝（最大－最小）÷（最大＋最小）　※「<b>差 ÷ 和</b>」と覚える</div>
+        <div class="ex">例：波形の最大10V・最小2V → (10−2)÷(10+2)＝8÷12≒<b>0.67（67%）</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">③ 占有周波数帯幅</div>
+        <div class="formula">AM＝<b>2×fm</b>（信号周波数の2倍）／FM＝<b>2×(Δf＋fm)</b>（最大周波数偏移＋信号周波数を「足して2倍」＝カーソンの式）</div>
+        <div class="ex">例：fm=3kHzのAM → 2×3＝<b>6kHz</b>／Δf=5kHz・fm=3kHzのFM → 2×(5+3)＝<b>16kHz</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">④ PCM・標本化定理</div>
+        <div class="formula">標本化周波数fsは<b>fs ≧ 2×fm</b>（信号の最高周波数の2倍以上）／伝送速度＝fs×ビット数／量子化ビットが1増えるとS/Nは約<b>6dB改善</b></div>
+        <div class="ex">例：fm=4kHz → fs≧8kHz。fs=8kHz・8bitなら伝送速度＝8000×8＝<b>64,000bps</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">⑤ PLLシンセサイザの発振周波数</div>
+        <div class="formula">fo＝N×fr　（fo=出力周波数、N=分周比、fr=基準/比較周波数）</div>
+        <div class="ex">例：fr=25kHz・N=400 → 25kHz×400＝<b>10MHz</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">⑥ 定電圧回路の最大損失</div>
+        <div class="formula">損失[W]＝（入力電圧の最大値Vi－出力電圧Vo）×最大負荷電流I　※「<b>大きい方×大きい方</b>」をかける</div>
+        <div class="ex">例：Vi最大15V・Vo=5V・I最大2A → (15−5)×2＝<b>20W</b></div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">⑦ レーダの最小探知距離</div>
+        <div class="formula">距離R＝c×τ÷2　（c=電波の速さ、τ=パルス幅）。覚え方：<b>1μs＝150m</b></div>
+        <div class="ex">例：パルス幅τ=1μs → 最小探知距離＝<b>150m</b>（2μsなら300m）</div>
+      </div>
+      <div class="matome-item">
+        <div class="ttl">⑧ 定在波比 SWR</div>
+        <div class="formula">SWR＝（1＋|Γ|）÷（1－|Γ|）　※Γ＝反射係数。完全に整合（反射ゼロ）ならΓ=0でSWR=<b>1</b></div>
+        <div class="ex">例：Γ=0.5 → (1+0.5)÷(1−0.5)＝1.5÷0.5＝<b>3</b></div>
+      </div>
+      <h2 style="font-size:14px;margin:16px 0 4px">💡 計算の共通テク（電卓なしで解く）</h2>
+      <div class="tipbox">試験の数字は<b>きれいに割り切れるように作られている</b>。汚い数字になったら計算ミスを疑って最初からやり直す。</div>
+      <div class="tipbox"><b>先に選択肢を見る</b>。桁（ゼロの数）が違う選択肢ばかりなら、細かい計算をせず桁だけ合わせれば選べる。</div>
+      <div class="tipbox">dBで覚えるのは3つだけ：<b>3dB=2倍／10dB=10倍／組合せは足し算</b>。1,000倍ならゼロ3個→30dB。</div>
+      <div class="tipbox">単位換算：k=10³、M=10⁶、μ=10⁻⁶、n=10⁻⁹。<b>指数は掛け算→足し算、割り算→引き算</b>になる。</div>
+      <div class="tipbox">口グセで覚える：変調度は<b>「差÷和」</b>／カーソンは<b>「足して2倍」</b>／コレクタ損失は<b>「大きい方×大きい方」</b>／量子化は<b>「1bit＝6dB」</b>。</div>
+      <div class="tipbox">それでも分からない計算は<b>即スキップ</b>。1問5点は語句問題と同じ価値。悩む時間で語句2問見直す方が得。</div>
+    </div>
+    <div class="box">
+      <h2>🃏 裏技・テクニック</h2>
+      <div id="tricks-list"></div>
+    </div>
+    <div class="box">
+      <h2>📊 頻出ランキング（直近7年・13回中）</h2>
+      <div id="full-freq"></div>
+    </div>
+    <div class="box">
+      <h2>🔁 繰り返し出題リスト</h2>
+      <div class="muted" style="margin-bottom:8px">直近7年（13回）で3回以上ほぼ同じ内容で出題されたもの。カード/クイズの「🔥Lv1鉄板」で集中対策できます。</div>
+      <div id="recur-list"></div>
+    </div>
+    <div class="box">
+      <h2>📤 このアプリを友達に共有</h2>
+      <div style="font-size:13.5px">
+        <p style="margin:6px 0">このHTMLファイル<b>1個だけで完結</b>しています（通信不要・インストール不要）。ファイルをそのまま送ればOK。</p>
+        <p style="margin:6px 0"><b>Android：</b>LINE・メール等でファイルを送る → 受け取った人がタップしてChromeで開く。</p>
+        <p style="margin:6px 0"><b>iPhone：</b>AirDropや「ファイル」アプリから開けます。もし進捗が保存されない場合は、無料の「Documents」アプリで開くか、Webにアップして使うのが確実です。</p>
+        <p style="margin:6px 0"><b>注意：</b>進捗（覚えたカード・正答率）は端末ごとに保存され、共有されません。</p>
+      </div>
+      <button class="act danger" style="margin-top:10px" onclick="resetAll()">この端末の進捗をリセット</button>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar">
+  <button class="on" data-tab="home" onclick="go('home')"><span class="ico">🏠</span>ホーム</button>
+  <button data-tab="cards" onclick="go('cards')"><span class="ico">📇</span>カード</button>
+  <button data-tab="quiz" onclick="go('quiz')"><span class="ico">📝</span>クイズ</button>
+  <button data-tab="mock" onclick="go('mock')"><span class="ico">📋</span>模試</button>
+  <button data-tab="study" onclick="go('study')"><span class="ico">🗺</span>攻略</button>
+</nav>
+
+<script>
+/* ===== データ ===== */
+const TF=['◯（正しい）','✕（誤り）'];
+const TOPICS={henchou:'変調・復調',soushin:'送信機',jushin:'受信機',dengen:'電源',sokutei:'測定',tajuu:'多重・衛星',radar:'レーダ・航法',fugou:'符号・雑音',keisan:'計算問題'};
+
+/* 問題カード（全問 著者検証済み）
+   id=固定ID t=分野 q=問題 c=選択肢 a=正解index e=解説 k=決め打ち r=過去の出題回数(繰り返し問題) */
+const CARDS=[
+/* ===== 変調・復調 ===== */
+{id:'hen01',t:'henchou',q:'FMは振幅が一定なので、受信機の振幅制限器(リミタ)で振幅性の雑音を除去でき、S/Nを良くできる。',c:TF,a:0,e:'FM＝振幅一定が最大の特徴。だからリミタで振幅方向の雑音を切れる。',k:'FM＝振幅一定＝雑音に強い'},
+{id:'hen02',t:'henchou',q:'SSBはDSB(両側波帯)に比べて占有周波数帯幅が2倍になる。',c:TF,a:1,e:'SSBは片側の側波帯だけを送る→帯域は約半分。送信電力も節約できる。',k:'SSB＝帯域は半分・電力も小さい'},
+{id:'hen03',t:'henchou',q:'QPSK(4PSK)は1シンボルで何ビット伝送できるか。',c:['1ビット','2ビット','3ビット','4ビット'],a:1,e:'QPSK=4状態=2ビット/シンボル。BPSK(2状態=1ビット)の2倍。',k:'BPSK=1bit / QPSK=2bit / 16QAM=4bit'},
+{id:'hen04',t:'henchou',q:'16QAMは1シンボルで4ビットを伝送できる。',c:TF,a:0,e:'16状態＝2の4乗＝4ビット。64QAMなら6ビット。'},
+{id:'hen05',t:'henchou',q:'多値変調(QAM等)は多値数を増やすほど、同じ帯域でビットレートが上がるが、雑音やひずみに弱くなる。',c:TF,a:0,e:'効率と誤り耐性はトレードオフ。この関係は組合せ問題の定番。',k:'多値化＝高効率だが雑音に弱い'},
+{id:'hen06',t:'henchou',q:'OFDMのガードインターバルの主な働きは次のどれか。',c:['マルチパス(遅延波)によるシンボル間干渉を防ぐ','送信電力を増やす','搬送波の周波数偏移を補正する','量子化雑音を減らす'],a:0,e:'遅延波が来ても干渉しない「余白」を作る。OFDM＝ガードインターバル＝遅延波対策。',k:'ガードインターバル＝遅延波・シンボル間干渉対策',r:4},
+{id:'hen07',t:'henchou',q:'OFDMのガードインターバルは、シンボルのどの部分をコピーして付加するか。',c:['シンボルの時間的に後端の一部を、先頭にコピーして付加','シンボルの先頭の一部を、後端にコピーして付加','シンボル全体を2回繰り返す','無信号区間を挿入する'],a:0,e:'後端の一部を先頭に付加(サイクリックプレフィックス)。R7年7月のA-1で出たばかり。',k:'GI＝「後端」を「先頭」にコピー',r:4},
+{id:'hen08',t:'henchou',q:'AM(A3E)で変調度が100%を超えると過変調となり、波形がひずみ占有周波数帯幅が広がる。',c:TF,a:0,e:'過変調＝ひずみ＋帯域拡大。定番のひっかけ。'},
+{id:'hen09',t:'henchou',q:'ロールオフフィルタは、デジタル信号の帯域制限と符号間干渉(ISI)の防止のために用いられる。',c:TF,a:0,e:'QAM等の帯域制限用。ISIを出さずに帯域を絞る波形整形フィルタ。',r:3},
+{id:'hen10',t:'henchou',q:'AM波の包絡線の最大値が60mV、最小値が20mVのとき変調度はいくらか。',c:['25%','50%','66.7%','75%'],a:1,e:'m=(最大−最小)/(最大＋最小)=(60−20)/(60+20)=40/80=50%。',k:'変調度 m=(A−B)/(A+B)',tip:'「差÷和」の口グセだけ。上(差)が下(和)より必ず小さい→100%超えたら計算ミス。'},
+{id:'hen11',t:'henchou',q:'AM(A3E)で最高変調周波数が7.5kHzのとき、占有周波数帯幅はいくらか。',c:['7.5kHz','15kHz','22.5kHz','30kHz'],a:1,e:'AMの帯域＝最高変調周波数の2倍（上下に側波帯）。',k:'AM帯域＝2×最高変調周波数',tip:'「×2」するだけ。理屈は「上下に同じ幅の側波帯が出るから」とイメージで覚える。'},
+{id:'hen12',t:'henchou',q:'FM波の占有周波数帯幅の近似式(カーソンの式)はどれか。最大周波数偏移Δf、最高変調周波数fmとする。',c:['B=2(Δf+fm)','B=Δf+fm','B=2Δf','B=Δf×fm'],a:0,e:'カーソン則 B=2(Δf+fm)。例:Δf=5kHz,fm=3kHzならB=16kHz。',k:'FM帯域＝2(Δf＋fm)',tip:'「足して2倍」の口グセだけ。AMは「×2」、FMは「足して×2」とセットで覚えると混ざらない。'},
+{id:'hen13',t:'henchou',q:'FMの変調指数mは、最大周波数偏移Δfと変調周波数fmを使ってどう表すか。',c:['m=Δf/fm','m=fm/Δf','m=Δf×fm','m=2Δf'],a:0,e:'変調指数＝偏移÷変調周波数。偏移が大きいほど深い変調。',k:'FM変調指数 m=Δf/fm'},
+{id:'hen14',t:'henchou',q:'SSB(J3E)受信では、抑圧されている搬送波に相当する周波数を受信側で復元して(復調用局部発振)信号に加える必要がある。',c:TF,a:0,e:'SSBは搬送波が無いので、受信側で復元して復調(プロダクト検波)。SSBは直近7年で12回登場の頻出。',r:3},
+{id:'hen15',t:'henchou',q:'SSB送信機で、搬送波を抑圧した両側波帯(DSB)信号を作る回路はどれか。',c:['平衡変調器','周波数弁別器','リミタ','スケルチ回路'],a:0,e:'平衡変調器(リング変調器)で搬送波を抑圧→帯域フィルタで片側だけ取り出すとSSB。',k:'SSB＝平衡変調器＋帯域フィルタ'},
+{id:'hen16',t:'henchou',q:'プレエンファシスは、FM送信側で信号の高域成分をあらかじめ強調してS/Nを改善する技術である。',c:TF,a:0,e:'FMは高域ほど雑音が増えるので、送信で高域を持ち上げ、受信のディエンファシスで戻す。',k:'プレエンファシス(送信)⇔ディエンファシス(受信)'},
+{id:'hen17',t:'henchou',q:'間接FM方式では、位相変調器の出力を周波数逓倍器に通して必要な周波数偏移を得る。',c:TF,a:0,e:'位相変調で作った小さい偏移を逓倍で拡大するのが間接FM。'},
+{id:'hen18',t:'henchou',q:'QAM(直交振幅変調)は、互いに直交する(位相がπ/2異なる)2つの搬送波をそれぞれ振幅変調して合成する方式である。',c:TF,a:0,e:'I軸とQ軸の2搬送波に振幅情報を載せて合成。直近7年で3回出題の頻出。',k:'QAM＝直交2搬送波×振幅変調',r:3},
+{id:'hen19',t:'henchou',q:'BPSKの2つの信号点の位相差はいくらか。',c:['45°','90°','180°','360°'],a:2,e:'BPSK＝位相180°反転の2値。QPSKは90°間隔で4値。',k:'BPSK＝180° / QPSK＝90°間隔'},
+{id:'hen20',t:'henchou',q:'QPSK復調器では、再生した基準搬送波と、それをπ/2移相したものを2系統の乗算器に加えて同期検波する。',c:TF,a:0,e:'搬送波再生→2系統(0°とπ/2)で乗算→LPF→識別。A-5枠で4回出題(直近7年)。',k:'QPSK復調＝基準搬送波±π/2で同期検波',r:4},
+/* ===== 送信機 ===== */
+{id:'sou01',t:'soushin',q:'C級増幅は効率が最も高いが、ひずみが大きいため、振幅が一定のFM波等の増幅に適する。',c:TF,a:0,e:'効率:C級>B級>A級、ひずみはその逆。FMは振幅一定なのでC級でOK。',k:'C級＝高効率・FM向き / A級＝低ひずみ・低効率'},
+{id:'sou02',t:'soushin',q:'周波数逓倍器は、C級増幅器のひずみで生じる高調波成分から、入力の整数倍の周波数を取り出す。',c:TF,a:0,e:'わざとひずませて高調波を作り、同調回路でn倍を取り出す。間接FMとセットで頻出。',k:'逓倍器＝C級のひずみ(高調波)を利用'},
+{id:'sou03',t:'soushin',q:'スプリアス発射に含まれないものはどれか。',c:['高調波発射','低調波発射','寄生発射','必要周波数帯内の発射'],a:3,e:'スプリアス＝必要帯域「外」の不要発射(高調波・低調波・寄生発射など)。'},
+{id:'sou04',t:'soushin',q:'PLL周波数シンセサイザで出力周波数のステップ(最小変化幅)を決めるのは何か。',c:['基準(比較)周波数','VCOの自走周波数','水晶発振器の電源電圧','低域フィルタの遮断周波数'],a:0,e:'出力fo＝N×基準周波数。Nを1変えるごとに基準周波数分だけ動く。直近7年で3回出題。',k:'シンセサイザ：fo=N×基準周波数、ステップ＝基準周波数',r:3},
+{id:'sou05',t:'soushin',q:'送信機の緩衝(バッファ)増幅器は、後段の影響で発振器の周波数が変動するのを防ぐために設ける。',c:TF,a:0,e:'発振器と電力増幅段を切り離す緩衝材。「発振周波数の安定化」がキーワード。'},
+{id:'sou06',t:'soushin',q:'FM送信機のIDC回路の目的は何か。',c:['周波数偏移を規定値以内に制限する','送信電力を増大させる','高調波を強調する','受信感度を上げる'],a:0,e:'IDC＝瞬時偏移制御。大きすぎる音声入力でも偏移(＝占有帯域)が規定を超えないようにする。',k:'IDC＝周波数偏移を制限'},
+{id:'sou07',t:'soushin',q:'水晶発振器の周波数安定度を高めるには、恒温槽に入れて温度変化を小さくする方法が有効である。',c:TF,a:0,e:'水晶は温度で周波数が動く→恒温槽(オーブン)で一定に。'},
+/* ===== 受信機 ===== */
+{id:'jus01',t:'jushin',q:'スーパヘテロダイン受信機の影像(イメージ)周波数はどれか。',c:['受信周波数 ± 2×中間周波数','受信周波数 ± 中間周波数','局部発振周波数の2倍','中間周波数の2倍'],a:0,e:'影像周波数＝受信周波数±2×IF（局発の反対側）。丸暗記でOK。',k:'影像周波数＝受信±2×IF',r:3},
+{id:'jus02',t:'jushin',q:'影像周波数による混信は、中間周波増幅段の選択度を高めれば除去できる。',c:TF,a:1,e:'影像は中間周波に変換された後では区別できない。高周波(RF)段の選択度で落とす。',k:'影像対策＝RF段／近接混信対策＝IF段'},
+{id:'jus03',t:'jushin',q:'FM受信機の感度抑圧効果とは、希望波に近接した強いレベルの妨害波により受信感度が低下する現象である。',c:TF,a:0,e:'強い近接妨害波→増幅器が飽和→希望波の利得低下。対策はRF段の選択度向上。',r:3},
+{id:'jus04',t:'jushin',q:'受信機の「選択度」とは、多数の電波の中から希望する電波だけを分離して取り出す能力である。',c:TF,a:0,e:'感度＝弱い信号を受信する能力／選択度＝混信を分離する能力。対で覚える。'},
+{id:'jus05',t:'jushin',q:'スーパヘテロダイン受信機は、受信信号を局部発振器と混合して中間周波数に変換してから増幅・検波する。',c:TF,a:0,e:'周波数変換→IF増幅→検波。これが基本構成。直近7年で11回登場の超頻出。'},
+{id:'jus06',t:'jushin',q:'AGC(自動利得制御)の目的は何か。',c:['受信入力レベルが変動しても出力をほぼ一定に保つ','局部発振周波数を安定化する','送信電力を制御する','スプリアスを除去する'],a:0,e:'入力の強弱に応じてIF増幅の利得を自動調整→出力一定。フェージング対策にも有効。',k:'AGC＝出力を一定に保つ'},
+{id:'jus07',t:'jushin',q:'スケルチ回路は、受信信号が無いときに出る大きな雑音を抑止する回路である。',c:TF,a:0,e:'無信号時のザーッという雑音をミュートする。FM受信機の定番回路。',r:6},
+{id:'jus08',t:'jushin',q:'FM検波器のうち、振幅変動の影響を受けにくく、リミタの働きを兼ねるものはどれか。',c:['レシオ検波器','直線検波器','二乗検波器','ヘテロダイン検波器'],a:0,e:'レシオ検波＝振幅変動に強い。フォスターシーリー(周波数弁別器)はリミタが必要。',k:'レシオ検波＝振幅変動に強い'},
+{id:'jus09',t:'jushin',q:'PLL復調器(FM用)の構成で正しい順序はどれか。',c:['位相比較器→低域フィルタ→VCO(帰還)','VCO→位相比較器→増幅器','低域フィルタ→位相比較器→水晶発振器','リミタ→平衡変調器→VCO'],a:0,e:'位相比較器→LPF→VCOのループ。復調出力はLPF出力(VCO制御電圧)から取る。A-7枠で3回出題(直近7年)。',k:'PLL復調＝位相比較器→LPF→VCO、出力はLPFから',r:3},
+{id:'jus10',t:'jushin',q:'近接周波数に対する選択度を主に決めるのは、中間周波増幅部の帯域フィルタである。',c:TF,a:0,e:'隣のチャネルを切るのはIFフィルタ。影像はRF段。役割分担を覚える。'},
+{id:'jus11',t:'jushin',q:'相互変調妨害とは、2つ以上の強い妨害波が受信機の非直線性により混合され、その和・差の周波数成分が希望波の帯域内に生じる妨害である。',c:TF,a:0,e:'2f1−f2などの3次成分が帯域内に落ちると除去困難。「非直線(ひずみ)」がキーワード。'},
+{id:'jus12',t:'jushin',q:'中波の同期放送(精密同一周波放送)では、相互に同期する放送局は同一周波数で「異なる番組」を放送する。',c:TF,a:1,e:'同一周波数・同一番組が原則。搬送波周波数の差を極めて小さく保つ。A-3枠で3回出題(直近7年)。',k:'同期放送＝同一周波数・同一番組',r:3},
+{id:'jus13',t:'jushin',q:'受信機の雑音指数(NF)が小さいほど、受信機の感度は良くなる。',c:TF,a:0,e:'NF＝受信機内部でS/Nをどれだけ悪化させるか。小さいほど高感度。'},
+{id:'jus14',t:'jushin',q:'ダブルスーパヘテロダイン受信機で、第1中間周波数を高くする主な目的は何か。',c:['影像周波数妨害の軽減','消費電力の削減','音質の向上','送信効率の向上'],a:0,e:'第1IF高→影像が受信周波数から遠くなり除去しやすい。第2IF低→近接選択度を確保。両立が狙い。',k:'第1IF高＝影像対策／第2IF低＝選択度'},
+/* ===== 電源 ===== */
+{id:'den01',t:'dengen',q:'全波整流回路(ブリッジ)に必要なダイオードは何個か。',c:['1個','2個','4個','6個'],a:2,e:'ブリッジ＝4個。半波は1個。リプル周波数は全波が電源の2倍。',k:'ブリッジ整流＝4個／全波のリプル＝電源の2倍'},
+{id:'den02',t:'dengen',q:'浮動(フローティング)充電は、整流装置に蓄電池と負荷を並列に接続し、常に充電しながら負荷へ電力を供給する方式である。',c:TF,a:0,e:'停電時は蓄電池が即座に負荷を支える。UPS・無線局電源の基本。A-10頻出。',k:'浮動充電＝整流器＋蓄電池＋負荷を並列'},
+{id:'den03',t:'dengen',q:'インバータは直流を交流に変換する装置である。',c:TF,a:0,e:'インバータ＝DC→AC。コンバータ＝DC→DC。逆に覚えない。A-10枠で4回出題(直近7年)。',k:'インバータ＝直流→交流／DC-DCコンバータ＝直流→直流',r:4},
+{id:'den04',t:'dengen',q:'直列制御形定電圧回路で、制御用トランジスタのコレクタ損失が最大になるのはどんなときか。',c:['入力電圧が最大で負荷電流が最大のとき','入力電圧が最小で負荷電流が最小のとき','入力電圧が最大で負荷電流が最小のとき','出力電圧が最大のとき'],a:0,e:'損失＝(入力−出力)×電流。入力電圧max・電流maxで最大。A-10枠で3回出た計算問題(直近7年)の考え方。',k:'コレクタ損失max＝(Vi最大−Vo)×I最大',r:3},
+{id:'den05',t:'dengen',q:'鉛蓄電池1セルの公称電圧は何Vか。',c:['1.2V','1.5V','2.0V','3.7V'],a:2,e:'鉛蓄電池＝2.0V/セル。リチウムイオン＝約3.7V。混同注意。',k:'鉛蓄電池＝2V／リチウムイオン＝約3.7V'},
+{id:'den06',t:'dengen',q:'リチウムイオン蓄電池の特徴として誤っているものはどれか。',c:['エネルギー密度が高い','メモリ効果がほとんどない','過充電・過放電の保護回路が必要','1セルの公称電圧は約1.2Vである'],a:3,e:'リチウムイオンは約3.7V。1.2Vはニッケル水素/ニカド。R5年7月にも出題。',k:'リチウムイオン＝3.7V・高密度・メモリ効果なし・保護回路必要'},
+{id:'den07',t:'dengen',q:'トリクル充電は、蓄電池の自己放電を補うために微小電流で常時充電しておく方式である。',c:TF,a:0,e:'「微小電流」がキーワード。急速充電と書いてあったら誤り。',k:'トリクル充電＝自己放電を補う微小電流'},
+{id:'den08',t:'dengen',q:'DC-DCコンバータには、入出力間を絶縁できる絶縁型と、絶縁できない非絶縁型がある。',c:TF,a:0,e:'スイッチングで交流化→トランス(絶縁型)→整流して再び直流。A-10コンバータ問題の選択肢そのまま。',r:4},
+/* ===== 測定 ===== */
+{id:'sok01',t:'sokutei',q:'スペクトルアナライザは信号を「周波数領域」で観測し、占有周波数帯幅やスプリアスの測定に使う。',c:TF,a:0,e:'オシロ＝時間領域(波形)、スペアナ＝周波数領域(成分)。対で覚える。',k:'オシロ＝時間領域／スペアナ＝周波数領域'},
+{id:'sok02',t:'sokutei',q:'サンプリングオシロスコープは、繰り返し信号を等価時間サンプリングすることで、高い周波数の波形を観測できる。',c:TF,a:0,e:'毎周期少しずつズラして標本化→ゆっくりした波形に変換。「繰り返し信号」が条件。A-20枠で3回出題(直近7年)。',k:'サンプリングオシロ＝繰り返し信号＋等価時間サンプリング',r:3},
+{id:'sok03',t:'sokutei',q:'CM形電力計は、結合した副同軸線路により進行波電力と反射波電力を分けて測定できる。',c:TF,a:0,e:'方向性結合の原理。進行波と反射波が分かればSWRも求まる。直近の出題は令和7年1月。',k:'CM形電力計＝進行波/反射波を分離測定'},
+{id:'sok04',t:'sokutei',q:'デジタルマルチメータの入力変換部は、被測定量(交流電圧・電流・抵抗など)を直流電圧に変換する。',c:TF,a:0,e:'入力変換→A/D変換→計数表示の流れ。B-1枠で4回出題(直近7年)の鉄板。',k:'マルチメータ＝何でも一旦「直流電圧」に変換',r:4},
+{id:'sok05',t:'sokutei',q:'占有周波数帯幅とは、全輻射電力の何%が含まれる帯域か。',c:['90%','95%','99%','100%'],a:2,e:'99%（上下にそれぞれ0.5%ずつ残る）。直近7年で8回登場の頻出。',k:'占有周波数帯幅＝全電力の99%',r:3},
+{id:'sok06',t:'sokutei',q:'アイパターンの縦方向の開きが大きいほど、何に対する余裕があるか。',c:['雑音','タイミングずれ(ジッタ)','周波数偏移','送信電力'],a:0,e:'縦の開き＝雑音余裕、横の開き＝タイミング余裕。開きが大きい＝良好な伝送。',k:'アイパターン：縦＝雑音余裕／横＝ジッタ余裕'},
+{id:'sok07',t:'sokutei',q:'ビット誤り率(BER)測定では、擬似ランダム(PN)符号を送信し、受信側で誤ったビット数を総ビット数で割って求める。',c:TF,a:0,e:'BER＝誤りビット数÷総伝送ビット数。PN符号と同期がキーワード。'},
+{id:'sok08',t:'sokutei',q:'周波数カウンタの測定誤差の要因に含まれるものはどれか。',c:['±1カウント誤差と基準発振器の確度','電源電圧の極性','プローブの色','表示桁数の偶奇'],a:0,e:'ゲート時間の端数による±1カウント誤差＋内部基準発振器の確度が主要因。'},
+{id:'sok09',t:'sokutei',q:'同軸形抵抗減衰器は、特性インピーダンスに整合させた状態で、広い周波数範囲にわたりほぼ一定の減衰量を得られる。',c:TF,a:0,e:'抵抗で構成(T形/π形)→周波数特性が平坦。「整合」「一定減衰」がキーワード。減衰器は直近7年で6回登場の超頻出。',r:6},
+{id:'sok10',t:'sokutei',q:'トランスバーサル形自動等化器は、遅延回路と可変係数の乗算器・加算器で構成され、何を打ち消すか。',c:['符号間干渉(ISI)','熱雑音','搬送波そのもの','電源リプル'],a:0,e:'マルチパス等による波形ひずみ＝符号間干渉を時間領域で打ち消す。B-3枠で5回出題(直近7年)の最頻出。',k:'自動等化器＝遅延線＋可変係数で符号間干渉を打消す',r:5},
+{id:'sok11',t:'sokutei',q:'FM送信機のS/N測定では、規定の変調をかけたときの出力(S)と、変調を止めたときの残留雑音出力(N)との比を求める。',c:TF,a:0,e:'変調あり÷変調なし(無変調)の出力比。A-16枠で4回出題(直近7年)。',k:'S/N測定＝変調時出力÷無変調時雑音',r:4},
+{id:'sok12',t:'sokutei',q:'電圧定在波比(VSWR)について正しいものはどれか。',c:['整合がとれているとき1になる','整合がとれているとき0になる','常に1未満である','反射が大きいほど小さくなる'],a:0,e:'SWR=(1+|Γ|)/(1−|Γ|)≧1。完全整合(反射ゼロ)で1。',k:'SWR＝整合時1・反射が増えると大きくなる'},
+{id:'sok13',t:'sokutei',q:'ボロメータ(サーミスタ等)による高周波電力測定は、電力を熱に変えて素子の抵抗変化から測る方式である。',c:TF,a:0,e:'高周波電力→熱→抵抗変化。マイクロ波の電力測定の定番。'},
+{id:'sok14',t:'sokutei',q:'送信機のスプリアスや占有周波数帯幅の測定に最も適した測定器はどれか。',c:['スペクトルアナライザ','テスタ(回路計)','オシロスコープ','周波数カウンタ'],a:0,e:'周波数ごとの成分を見る測定はすべてスペアナ。スペアナは直近7年で11回登場。',k:'帯域・スプリアス測定＝スペアナ一択'},
+/* ===== 多重・衛星 ===== */
+{id:'taj01',t:'tajuu',q:'PCMの処理の順序として正しいものはどれか。',c:['標本化 → 量子化 → 符号化','量子化 → 標本化 → 符号化','符号化 → 標本化 → 量子化','標本化 → 符号化 → 量子化'],a:0,e:'標本化(時間を離散化)→量子化(振幅を段階化)→符号化(2進数に)。順番固定。',k:'PCM＝標本化→量子化→符号化'},
+{id:'taj02',t:'tajuu',q:'標本化定理によれば、標本化周波数は信号の最高周波数の何倍以上が必要か。',c:['1倍','2倍','4倍','10倍'],a:1,e:'fs≧2fm。下回ると折り返し(エイリアシング)ひずみが発生。',k:'標本化定理 fs≧2fm',r:7},
+{id:'taj03',t:'tajuu',q:'最高周波数4kHzの音声をPCM伝送するのに必要な最小の標本化周波数はいくらか。',c:['4kHz','8kHz','16kHz','32kHz'],a:1,e:'2×4kHz=8kHz。電話の8kHzサンプリングはここから。',tip:'「2倍」するだけ。実在の電話規格(4kHz→8kHzサンプリング)なので答えごと暗記できる。'},
+{id:'taj04',t:'tajuu',q:'量子化ビット数を1ビット増やすと、量子化雑音に対するS/Nは約何dB改善するか。',c:['約1dB','約3dB','約6dB','約10dB'],a:2,e:'1ビット≒6dB。これも定番の数字。',k:'量子化1ビット＝S/N約6dB改善',tip:'計算問題に見えて実は「6」という定数の暗記問題。増えたビット数×6dBで終わり。'},
+{id:'taj05',t:'tajuu',q:'CDMA(符号分割多元接続)は、各局に異なる拡散符号を割り当て、同一周波数・同一時間で多重する方式である。',c:TF,a:0,e:'FDMA＝周波数で／TDMA＝時間で／CDMA＝符号で分ける。多元接続はA-14枠で4回出題(直近7年)。',k:'FDMA=周波数/TDMA=時間/CDMA=符号',r:4},
+{id:'taj06',t:'tajuu',q:'TDMA方式で、各局のバースト信号の衝突を防ぐために設けるものはどれか。',c:['ガードタイム','ガードバンド','パイロット信号','プリエンファシス'],a:0,e:'TDMA＝時間の隙間「ガードタイム」。FDMAは周波数の隙間「ガードバンド」。',k:'TDMA＝ガードタイム／FDMA＝ガードバンド',r:4},
+{id:'taj07',t:'tajuu',q:'SCPC方式は、1つの搬送波に1チャネルを割り当てるFDMAの一種である。',c:TF,a:0,e:'Single Channel Per Carrier。B-2枠で4回出題(直近7年)。「要求(デマンド)割当て」と相性が良いのも特徴。',k:'SCPC＝1搬送波1チャネル(FDMA)',r:4},
+{id:'taj08',t:'tajuu',q:'静止衛星の高度はおよそいくらか。',c:['約3,600km','約20,000km','約36,000km','約100,000km'],a:2,e:'赤道上空 約36,000km、周期は地球の自転と同じ約24時間。',k:'静止衛星＝赤道上空36,000km・周期24h',r:4},
+{id:'taj09',t:'tajuu',q:'静止衛星が地球の影に入り太陽電池が使えなくなる「食」が起こるのはいつ頃か。',c:['春分・秋分の頃','夏至の頃','冬至の頃','毎月の新月の日'],a:0,e:'春分・秋分の前後。食に備えて衛星は蓄電池を搭載する。',k:'衛星の食＝春分・秋分の頃'},
+{id:'taj10',t:'tajuu',q:'衛星通信では、アップリンク(地球→衛星)の周波数はダウンリンクより高いものが使われる。',c:TF,a:0,e:'例：6GHz上り/4GHz下り、14GHz上り/12GHz下り。上りが高い。',k:'アップリンク＞ダウンリンク(6/4, 14/12GHz)'},
+{id:'taj11',t:'tajuu',q:'衛星通信地球局の受信系で、アンテナ直後の最初の段に置かれるものはどれか。',c:['低雑音増幅器(LNA)','大電力増幅器','周波数逓倍器','スケルチ回路'],a:0,e:'微弱な衛星信号→まず低雑音増幅。送信側は大電力増幅器(TWTA等)。A-13枠で3回出題(直近7年)。',k:'地球局：受信の頭はLNA／送信はHPA(TWTA)',r:3},
+{id:'taj12',t:'tajuu',q:'MIMOは、送受信に複数のアンテナを使い、周波数帯域を増やさずに伝送容量を増やせる技術である。',c:TF,a:0,e:'空間多重。直近7年の工学Aでは未出題(優先度低・余裕があれば)。'},
+{id:'taj13',t:'tajuu',q:'デマンドアサインメント(要求割当て)方式は、通信の要求があったときだけ回線を割り当てる方式である。',c:TF,a:0,e:'固定割当て(プリアサインメント)と対。回線の利用効率が上がる。'},
+/* ===== レーダ・航法 ===== */
+{id:'rad01',t:'radar',q:'ILS(計器着陸システム)で、滑走路中心線からの「水平方向」のずれ情報を与えるものはどれか。',c:['ローカライザ','グライドパス','マーカビーコン','レーダトランスポンダ'],a:0,e:'ローカライザ＝水平(VHF帯)、グライドパス＝垂直・進入角(UHF帯)。直近7年で5回出題の最頻出問題。',k:'ローカライザ＝水平/VHF・グライドパス＝垂直/UHF',r:5},
+{id:'rad02',t:'radar',q:'ILSのマーカビーコンについて正しいものはどれか。',c:['滑走路進入端からの距離情報を与え、DMEで代用されることがある','垂直方向のずれを与える','UHF帯を使い偏波は垂直','滑走路の照明を制御する'],a:0,e:'マーカビーコン＝距離の目印(VHF帯)。DME代用あり。「ローカライザがDME代用」と書いてあったら誤り(R7年7月の正解)。',k:'DMEで代用されるのはマーカビーコン',r:5},
+{id:'rad03',t:'radar',q:'ILSのグライドパスが発射する電波の偏波面は垂直である。',c:TF,a:1,e:'水平偏波が正しい。R6年7月はこの「垂直」が誤り選択肢＝正解だった。',k:'グライドパスの偏波＝水平',r:5},
+{id:'rad04',t:'radar',q:'パルスレーダの距離分解能を良くするには、送信パルス幅をどうすればよいか。',c:['狭くする','広くする','繰返し周波数を上げる','アンテナを大きくする'],a:0,e:'パルスが短い＝近接した2目標を分離できる。最小探知距離も短くなる。',k:'パルス幅 狭い＝分解能良い・最小探知距離 短い'},
+{id:'rad05',t:'radar',q:'パルスレーダで最大探知距離を伸ばす方法として誤っているものはどれか。',c:['送信電力を大きくする','アンテナ利得を大きくする','パルス繰返し周波数を上げる','受信機の感度を良くする'],a:2,e:'繰返し周波数を上げると、次のパルスまでに戻れる距離が短くなり最大探知距離は「短く」なる。下げるのが正解。',k:'繰返し周波数を下げる→最大探知距離が伸びる'},
+{id:'rad06',t:'radar',q:'ドップラレーダは、移動する目標からの反射波の周波数偏移を利用して速度を測る。',c:TF,a:0,e:'近づく目標→周波数が高く、遠ざかる→低く。移動目標の検出・速度測定に使う。'},
+/* ===== 符号・雑音 ===== */
+{id:'fug01',t:'fugou',q:'ハミング符号は1ビットの誤りを訂正できる誤り訂正符号である。',c:TF,a:0,e:'検出だけでなく「訂正」できるのがポイント。誤り訂正はA-14枠で3回出題(直近7年)。',r:3},
+{id:'fug02',t:'fugou',q:'パリティ検査(偶奇検査)は誤りの検出はできるが、訂正はできない。',c:TF,a:0,e:'検出のみ＝パリティ／訂正できる＝ハミング・畳み込み等。',k:'パリティ＝検出のみ／ハミング＝訂正可'},
+{id:'fug03',t:'fugou',q:'抵抗体内の電子の熱運動により発生し、温度に依存する雑音はどれか。',c:['熱雑音','散弾(ショット)雑音','フリッカ雑音','混変調雑音'],a:0,e:'熱雑音＝抵抗・温度。散弾雑音＝能動素子を流れる電流に伴う。A-15枠で4回出題(直近7年)。',k:'熱雑音＝温度／散弾雑音＝電流',r:4},
+{id:'fug04',t:'fugou',q:'雑音指数(NF)は、回路の入力のS/Nを出力のS/Nで割ったもので、S/Nの劣化の度合いを表す。',c:TF,a:0,e:'NF＝(入力S/N)/(出力S/N)≧1。小さいほど良い。',k:'NF小さい＝良い受信機'},
+{id:'fug05',t:'fugou',q:'畳み込み符号の復号に用いられる代表的な方法はどれか。',c:['ビタビ復号','フーリエ変換','二乗検波','同期検波'],a:0,e:'畳み込み符号＋ビタビ復号はセットで暗記。',k:'畳み込み符号⇔ビタビ復号'},
+{id:'fug06',t:'fugou',q:'フリッカ雑音(1/f雑音)は、周波数が低いほど大きくなる雑音である。',c:TF,a:0,e:'1/f＝周波数に反比例。低周波で問題になる。A-15枠の選択肢の常連。'},
+{id:'fug07',t:'fugou',q:'多段増幅器全体の雑音指数を小さくするために最も重要なのはどれか。',c:['初段の雑音指数を小さくし利得を大きくする','最終段の利得を大きくする','全段の電源電圧を上げる','段数を増やす'],a:0,e:'総合NF≒F1+(F2−1)/G1。初段が支配的。だから受信機の頭にLNAを置く。',k:'雑音指数は「初段」で決まる'},
+{id:'fug08',t:'fugou',q:'ARQ(自動再送要求)は、受信側で誤りを検出したとき送信側に再送を要求する方式である。',c:TF,a:0,e:'ARQ＝検出して再送／FEC＝受信側だけで訂正(再送不要)。対で覚える。',k:'ARQ＝再送／FEC＝その場で訂正'},
+{id:'fug09',t:'fugou',q:'インタリーブの目的は何か。',c:['バースト誤りを分散させてランダム誤りに変える','伝送速度を2倍にする','搬送波を抑圧する','消費電力を減らす'],a:0,e:'送信順を並べ替え→受信で戻すと、連続誤りがバラバラに→誤り訂正が効きやすくなる。'},
+{id:'fug10',t:'fugou',q:'ダイバーシティ受信は、相関の小さい複数の受信信号を切り替えまたは合成して、フェージングの影響を軽減する技術である。',c:TF,a:0,e:'スペース(空間)・周波数・時間ダイバーシティなど。「相関が小さい」がキーワード。ただしダイバーシティ単独の出題は直近7年では無し(優先度低)。'},
+{id:'fug11',t:'fugou',q:'移動通信で、建物などの反射波が干渉して受信レベルが激しく変動する現象を何というか。',c:['マルチパスフェージング','ドップラ効果','スポラディックE','オーロラ反射'],a:0,e:'マルチパス＝複数経路の電波が干渉。対策がダイバーシティや等化器・OFDM。',k:'マルチパス→対策＝ダイバーシティ/等化器/OFDM'},
+/* ===== 計算問題（型の練習） ===== */
+{id:'kei01',t:'keisan',q:'電力比1,000倍をdBで表すといくらか。',c:['10dB','20dB','30dB','60dB'],a:2,e:'10倍＝10dBを3回→30dB。電力2倍≒3dBも合わせて覚える。',k:'dB：10倍=10dB・2倍≒3dB',tip:'ゼロの数を数えるだけ。1,000=ゼロ3個→30dB。計算というより数えるゲーム。'},
+{id:'kei02',t:'keisan',q:'利得20dBの増幅器と利得10dBの増幅器を縦続接続した。総合利得はいくらか。',c:['30dB','200dB','2dB','10dB'],a:0,e:'dBにすると掛け算が足し算になる。20+10=30dB。減衰器なら引き算。',k:'縦続接続＝dBの足し算',tip:'dBを見たら掛け算は忘れてOK。「足すだけ」。減衰器はマイナスで足す。'},
+{id:'kei03',t:'keisan',q:'標本化周波数8kHz、1標本8ビットで符号化したPCM信号1チャネルの伝送速度はいくらか。',c:['8kbps','16kbps','32kbps','64kbps'],a:3,e:'8k×8bit=64kbps。電話1chの64kbpsはこの計算。',k:'PCM伝送速度＝標本化周波数×ビット数',tip:'「8×8=64」と語呂で丸暗記してOK。電話の64kbpsは実在の規格なので答えごと覚えられる。'},
+{id:'kei04',t:'keisan',q:'PLL周波数シンセサイザで比較(基準)周波数が1MHz、可変分周器の分周比Nが120のとき、出力周波数はいくらか。',c:['1.2MHz','12MHz','120MHz','1,200MHz'],a:2,e:'fo=N×比較周波数=120×1MHz=120MHz。Nを1変えると1MHzずつ動く。',k:'シンセサイザ fo=N×比較周波数',tip:'単位はMHzのまま動かさない。N×比較周波数を1回掛けるだけで終わり。'},
+{id:'kei05',t:'keisan',q:'直列制御形定電圧回路：入力電圧21〜29V、出力14V一定、負荷電流0.5〜2A。制御トランジスタのコレクタ損失の最大値は？',c:['3.5W','15W','30W','58W'],a:2,e:'損失=(入力−出力)×電流。最大は(29−14)×2=30W。「最大×最大」で計算。',k:'損失max=(Vi最大−Vo)×I最大',tip:'迷ったら「大きい方×大きい方」。引き算1回→掛け算1回の2手で終わり。'},
+{id:'kei06',t:'keisan',q:'無負荷時の出力電圧が105V、定格負荷時が100Vの電源の電圧変動率はいくらか。',c:['0.5%','5%','10%','105%'],a:1,e:'変動率=(無負荷−定格)/定格×100=(105−100)/100×100=5%。',k:'電圧変動率=(無負荷−定格)/定格×100',tip:'「差を定格で割る」だけ。定格はたいてい100Vや200Vなので暗算で出る。'},
+{id:'kei07',t:'keisan',q:'パルス幅1μsのパルスレーダの最小探知距離は約いくらか。',c:['75m','150m','300m','600m'],a:1,e:'cτ/2=3×10^8×10^-6÷2=150m。パルスを送っている間は受信できないため。',k:'最小探知距離=cτ/2（1μs→150m）',tip:'「1μs=150m」を丸暗記→あとは比例するだけ（2μs=300m、0.5μs=75m）。指数計算は不要。'},
+{id:'kei08',t:'keisan',q:'変調度0.4のAM波を二乗検波したとき、検波出力のひずみ率は約いくらか。',c:['5%','10%','20%','40%'],a:1,e:'二乗検波のひずみ率＝m/4。0.4÷4=0.1=10%。A-6枠で3回出題(直近7年)の実物計算。',k:'二乗検波ひずみ率＝m/4',tip:'mを4で割るだけの1手。式の導出は不要、「m/4」という結果だけ覚える。',r:3},
+{id:'kei09',t:'keisan',q:'入力電力1Wに対し出力電力50Wの電力増幅器の利得は約何dBか。',c:['7dB','14dB','17dB','50dB'],a:2,e:'50倍＝10倍×5倍＝10dB＋7dB＝17dB。A-5枠で3回出題(直近7年)の実物計算。',k:'50倍=17dB（10倍×5倍）',tip:'5倍=7dB（10dBから半分の3dBを引く）。10dB・3dBの組合せでどんな倍率も作れる。',r:3},
+{id:'kei10',t:'keisan',q:'変調度50%のAM波の包絡線で、最小値Bと最大値Aの比 B/A はいくらか。',c:['1/4','1/3','1/2','2/3'],a:1,e:'B/A=(1−m)/(1+m)=(1−0.5)/(1+0.5)=0.5/1.5=1/3。A-3枠で3回出題(直近7年)の実物計算。',k:'B/A=(1−m)/(1+m)',tip:'変調度の式の逆向き。分子は「1引く」、分母は「1足す」だけ。m=0.5→1/3は答えごと暗記してOK。',r:3},
+{id:'den09',t:'dengen',q:'常時インバータ給電方式のUPS(無停電電源装置)で、通常時の電力の流れとして正しいものはどれか。',c:['整流装置→(蓄電池を充電しつつ)インバータ→負荷','商用電源→直接負荷(インバータは停止)','蓄電池→整流装置→負荷','インバータ→整流装置→負荷'],a:0,e:'常時：商用→整流→インバータ→負荷。停電時は蓄電池→インバータで無瞬断。UPSは直近7年で4回出題。',k:'UPS＝整流装置＋蓄電池＋インバータ（常時インバータ給電）',r:4},
+{id:'jus15',t:'jushin',q:'アナログ移動通信方式と比較したデジタル移動通信方式の特徴として誤っているものはどれか。',c:['秘匿性を高くしやすい','誤り訂正により雑音や干渉に強い','周波数の利用効率を高くできる','信号処理が簡単で回路規模が小さくなる'],a:3,e:'デジタルは信号処理が複雑(回路規模は大)。他の3つがメリット。A-16枠で3回出題(直近7年)。',k:'デジタル移動通信＝秘匿性・耐雑音・周波数効率が向上',r:3}
+];
+
+/* ===== 本番形式バンク：A問題（5択・各5点） ===== */
+const EXAM_A=[
+{id:'xa01',t:'henchou',q:'次の記述は、OFDM方式に用いられるガードインターバルについて述べたものである。［　］内に入れるべき字句の正しい組合せを下の番号から選べ。「ガードインターバルは、送信側において［A］により生成したOFDMシンボルの時間的に［B］端の一部分を、シンボルの［C］にコピーして付加することにより、マルチパスによる遅延波の影響を軽減するものである。」',c:['A:逆フーリエ変換(IFFT)　B:後　C:前(先頭)','A:逆フーリエ変換(IFFT)　B:前　C:後','A:フーリエ変換(FFT)　B:後　C:前(先頭)','A:フーリエ変換(FFT)　B:前　C:後','A:逆フーリエ変換(IFFT)　B:後　C:後'],a:0,e:'送信側はIFFTでOFDMシンボルを生成し、後端の一部を先頭にコピー(サイクリックプレフィックス)。R7年7月A-1とほぼ同文。'},
+{id:'xa02',t:'henchou',q:'次の記述は、直交振幅変調(QAM)方式について述べたものである。［　］内の正しい組合せを選べ。「互いに［A］の位相関係にある二つの搬送波をそれぞれ［B］変調して合成する方式であり、16QAMでは1シンボルで［C］ビットを伝送できる。」',c:['A:直交(π/2) B:振幅 C:4','A:直交(π/2) B:周波数 C:4','A:同相 B:振幅 C:2','A:直交(π/2) B:振幅 C:2','A:同相 B:周波数 C:4'],a:0,e:'I/Q直交2搬送波×振幅変調。16=2^4で4ビット。直近7年で3回出題。'},
+{id:'xa03',t:'henchou',q:'デジタル変調方式に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['BPSKの二つの信号点の位相差は180度である','QPSKは1シンボルで2ビットを伝送できる','16QAMは搬送波の振幅と位相の両方を利用する','多値数を増やすほど雑音やひずみに強くなる','QPSKはBPSKと同じ帯域幅で2倍の情報量を伝送できる'],a:3,e:'多値化すると信号点間隔が狭くなり雑音に「弱く」なる。逆転ひっかけの典型。'},
+{id:'xa04',t:'henchou',q:'AM(A3E)変調波をオシロスコープで観測したところ、包絡線の最大値が80V、最小値が20Vであった。変調度はいくらか。',c:['20%','40%','60%','75%','80%'],a:2,e:'m=(80−20)/(80+20)=60/100=60%。',tip:'「差÷和」と口グセに。割り切れない数字になったら計算ミス（試験の数字はきれいに作られている）。'},
+{id:'xa05',t:'henchou',q:'FM(F3E)波の最大周波数偏移が60kHz、最高変調周波数が15kHzのとき、占有周波数帯幅の近似値(カーソンの式による)はいくらか。',c:['75kHz','120kHz','150kHz','180kHz','300kHz'],a:2,e:'B=2(Δf+fm)=2(60+15)=150kHz。',tip:'「足して2倍」だけ。60+15=75→×2=150。kHzのまま計算して単位をいじらない。'},
+{id:'xa06',t:'soushin',q:'PLL周波数シンセサイザにおいて、水晶発振器の出力10MHzを1/10に分周して位相比較器に加えている。可変分周器の分周比Nが85のとき、出力周波数foの値はいくらか。',c:['8.5MHz','10MHz','85MHz','100MHz','850MHz'],a:2,e:'比較周波数=10MHz÷10=1MHz。ロック時 fo=N×1MHz=85MHz。A-2型の定番計算。',tip:'1/10分周＝10で割るだけ→あとはN倍。選択肢の桁が全部違うので、85×1MHz≒「85のままMHz」と分かれば即答できる。'},
+{id:'xa07',t:'soushin',q:'FM送信機に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['緩衝増幅器は、後段の影響による発振器の周波数変動を防ぐために設ける','IDC回路は、周波数偏移を規定値以内に制限するために設ける','周波数逓倍器には、ひずみの大きいC級増幅器が用いられる','間接FM方式では、周波数逓倍器で必要な周波数偏移を得る','周波数逓倍器は、入力周波数の整数分の一の周波数を取り出す回路である'],a:4,e:'逓倍器は整数「倍」の周波数を取り出す。「分の一」は分周器。'},
+{id:'xa08',t:'jushin',q:'中間周波数が10.7MHzのスーパヘテロダイン受信機で150MHzの電波を受信しているとき、影像周波数はいくらか。ただし局部発振周波数は受信周波数より高いものとする。',c:['128.6MHz','139.3MHz','160.7MHz','171.4MHz','182.1MHz'],a:3,e:'影像=受信+2×IF=150+21.4=171.4MHz（局発160.7MHzの反対側）。',tip:'「IFの2倍を足すか引くか」だけ。10.7×2=21.4は試験の常連数値なので結果ごと丸暗記してよい。局発が上なら足す。'},
+{id:'xa09',t:'jushin',q:'FM受信機の感度抑圧効果に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['希望波に近接した強いレベルの妨害波が加わると生じる','受信機内部の増幅器の飽和などによる利得低下が原因である','高周波(RF)段の選択度を高めると軽減できる','妨害波のレベルが低いほど生じやすい','妨害波の周波数が希望波の周波数に近いほど生じやすい'],a:3,e:'「強い」妨害波で起こる現象。レベルが低いほど…は逆。A-9枠で3回出題(直近7年)。'},
+{id:'xa10',t:'jushin',q:'我が国の中波放送における同期放送(精密同一周波放送)に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['同期放送を行う各局は同一周波数の電波を使用する','同期放送を行う各局は同一の放送番組を放送する','相互の搬送波周波数の差を極めて小さく保つ必要がある','置局によりサービスエリアの改善を図ることができる','同期放送を行う各局は互いに異なる放送番組を放送できる'],a:4,e:'同一周波数・同一番組が条件。A-3枠で3回出題(直近7年)の実物パターン。'},
+{id:'xa11',t:'jushin',q:'FM受信機に用いられるPLL復調器について、［　］内の正しい組合せを選べ。「PLL復調器は［A]、低域フィルタ(LPF)及び［B]で構成されるループであり、復調出力は［C]の出力から取り出される。」',c:['A:位相比較器 B:電圧制御発振器(VCO) C:低域フィルタ(LPF)','A:位相比較器 B:水晶発振器 C:VCO','A:周波数弁別器 B:VCO C:位相比較器','A:位相比較器 B:VCO C:VCO','A:振幅制限器 B:LPF C:LPF'],a:0,e:'位相比較器→LPF→VCOのループ。復調出力＝LPF出力(VCO制御電圧)。A-7枠で3回出題(直近7年)。'},
+{id:'xa12',t:'dengen',q:'電源に用いるコンバータ及びインバータに関する次の記述のうち、誤っているものを下の番号から選べ。',c:['DC-DCコンバータには、入出力間の絶縁ができる絶縁型と、できない非絶縁型がある','インバータは、直流を交流に変換する','インバータは、出力交流のパルス幅や位相等の制御により電圧や周波数を制御できる','整流装置は、交流を直流に変換する','インバータは、交流を直流に変換する装置である'],a:4,e:'インバータ＝DC→AC。A-10枠で4回出題(直近7年)された実物パターン。'},
+{id:'xa13',t:'dengen',q:'直列制御形定電圧回路において、入力電圧Viは21〜29V、出力電圧は14Vで一定、負荷電流は0.5〜2Aの範囲で変化する。制御用トランジスタのコレクタ損失の最大値はいくらか。',c:['3.5W','7W','15W','30W','58W'],a:3,e:'損失=(Vi−Vo)×I。最大=(29−14)×2=30W。A-10枠で3回出題(直近7年)の実物計算。',tip:'迷ったら「大きい方×大きい方」。(最大入力−出力)×最大電流。引き算→掛け算の2手だけ。'},
+{id:'xa14',t:'dengen',q:'鉛蓄電池の充電に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['定電流充電は、常に一定の電流で充電する','定電圧充電は、一定電圧で充電し、充電終期には電流が小さくなる','浮動充電は、整流装置に蓄電池と負荷を並列に接続して行う','均等充電は、セル間の特性のばらつきを補正するために行う','トリクル充電は、短時間に大電流を流して行う急速充電である'],a:4,e:'トリクル充電＝自己放電を補う「微小電流」の常時充電。A-11枠で3回出題(直近7年)。'},
+{id:'xa15',t:'sokutei',q:'CM形電力計について、［　］内の正しい組合せを選べ。「主同軸線路と副線路との［A]結合を利用して、給電線上の［B]電力と反射波電力を分離して測定でき、両者から［C]を求めることができる。」',c:['A:容量及び誘導(方向性) B:進行波 C:SWR(定在波比)','A:抵抗 B:進行波 C:変調度','A:容量及び誘導(方向性) B:皮相 C:力率','A:抵抗 B:平均 C:SWR(定在波比)','A:容量及び誘導(方向性) B:進行波 C:周波数'],a:0,e:'方向性結合で進行波・反射波を分離→SWR算出。直近の出題は令和7年1月。'},
+{id:'xa16',t:'sokutei',q:'入力電力1Wの信号を減衰器に通したところ、出力電力が1mWになった。この減衰器の減衰量はいくらか。',c:['3dB','10dB','20dB','30dB','60dB'],a:3,e:'1/1,000＝10倍の減衰×3回＝30dB。',tip:'dBはゼロの数を数えるだけ。1W→1mWはゼロ3個分→30dB。'},
+{id:'xa17',t:'sokutei',q:'占有周波数帯幅について、［　］内の正しい組合せを選べ。「占有周波数帯幅は、その上限及び下限の外側にそれぞれ全輻射電力の［A]%が含まれる帯幅であり、帯域内には全電力の［B]%が含まれる。測定には主に［C]が用いられる。」',c:['A:0.5 B:99 C:スペクトルアナライザ','A:1 B:98 C:スペクトルアナライザ','A:0.5 B:99 C:オシロスコープ','A:5 B:90 C:スペクトルアナライザ','A:0.5 B:95 C:周波数カウンタ'],a:0,e:'99%／外側0.5%ずつ／スペアナ。直近7年で8回登場の頻出。'},
+{id:'xa18',t:'sokutei',q:'FM(F3E)送信機の信号対雑音比(S/N)の測定について、［　］内の正しい組合せを選べ。「規定の変調信号(例:［A]Hz)で変調したときの復調出力(S)と、変調を［B]としたときの残留雑音出力(N)を測定し、その比をdBで表す。復調には［C]を用いる。」',c:['A:1,000 B:断(無変調) C:直線検波器','A:400 B:最大 C:二乗検波器','A:1,000 B:最大 C:直線検波器','A:100 B:断(無変調) C:平衡変調器','A:1,000 B:断(無変調) C:リング変調器'],a:0,e:'1000Hz変調→S、無変調→N。A-16枠で4回出題(直近7年)の実物パターン。'},
+{id:'xa19',t:'tajuu',q:'静止衛星に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['静止衛星は赤道上空約36,000kmの円軌道上にある','公転周期は地球の自転周期とほぼ同じである','約120度間隔に配置した3個の衛星でほぼ全世界をカバーできる','春分及び秋分のころ、衛星が地球の影に入る食が生じる','静止衛星は極軌道を周回している'],a:4,e:'静止衛星は赤道上空。極軌道は気象衛星NOAAなど別物。'},
+{id:'xa20',t:'tajuu',q:'最高周波数4kHzの音声信号を、標本化定理を満たす最小の標本化周波数で標本化し、1標本を8ビットで符号化した。このPCM信号の伝送速度はいくらか。',c:['8kbps','16kbps','32kbps','64kbps','128kbps'],a:3,e:'fs=2×4k=8kHz、8k×8bit=64kbps。定番の計算。',tip:'「2倍して掛ける」。4k→8k→×8bit=64k。電話＝64kbpsという実在の規格なので答えごと覚えてOK。'},
+{id:'xa21',t:'tajuu',q:'衛星通信の多元接続方式について、［　］内の正しい組合せを選べ。「FDMAは［A]を分割して各局に割り当てる。TDMAは時間を分割し、バースト信号の衝突を防ぐため［B]を設ける。CDMAは各局に異なる［C]を割り当てる。」',c:['A:周波数 B:ガードタイム C:拡散符号','A:周波数 B:ガードバンド C:拡散符号','A:時間 B:ガードタイム C:誤り訂正符号','A:周波数 B:ガードタイム C:誤り訂正符号','A:符号 B:ガードバンド C:拡散符号'],a:0,e:'TDMAの衝突防止は「ガードタイム」(時間の隙間)。A-14枠で4回出題(直近7年)。'},
+{id:'xa22',t:'radar',q:'ILS(計器着陸システム)に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['ILS地上システムのうち、ローカライザはDMEにより代用される場合もある','マーカ・ビーコンは滑走路進入端からの距離情報を与えるもので、VHF帯の電波を利用している','ローカライザは滑走路中心線の延長上からの水平方向のずれの情報を与えるもので、VHF帯を利用している','グライド・パスは設定進入角からの垂直方向のずれの情報を与えるもので、UHF帯を利用している','グライド・パスの発射する電波の偏波面は水平である'],a:0,e:'DMEで代用されることがあるのは「マーカ・ビーコン」。R7年7月A-12の実物そのまま。'},
+{id:'xa23',t:'radar',q:'パルス幅1μsのパルスレーダの最小探知距離は約いくらか。ただし電波の伝搬速度を3×10^8m/sとする。',c:['75m','150m','300m','600m','1,500m'],a:1,e:'cτ/2=150m。パルス送信中は受信できないため。',tip:'「1μs=150m」を丸暗記→比例させるだけ（2μs=300m、0.5μs=75m）。指数計算は一切不要。'},
+{id:'xa24',t:'fugou',q:'雑音に関する次の記述のうち、誤っているものを下の番号から選べ。',c:['増幅回路の内部雑音には、熱雑音及び散弾(ショット)雑音などがある','熱雑音の大きさは絶対温度に比例する','フリッカ雑音は周波数が低いほど大きくなる','散弾雑音は抵抗体のみで発生する','空電雑音は雷の放電などによって発生する自然雑音である'],a:3,e:'散弾雑音は能動素子(トランジスタ等)の電流に伴う。抵抗体は熱雑音。A-15枠で4回出題(直近7年)。'},
+{id:'xa25',t:'fugou',q:'PCMにおいて量子化ビット数を8ビットから10ビットに増やすと、量子化雑音に対するS/Nは約何dB改善されるか。',c:['2dB','4dB','6dB','12dB','24dB'],a:3,e:'1ビットあたり約6dB×2ビット＝約12dB。',tip:'「1bit＝6dB」の定数だけ。増えたビット数×6で終わり。計算問題に見えて実は暗記問題。'},
+{id:'xa26',t:'soushin',q:'送信設備の終段部において、電力増幅器に1Wの入力電力を加えたところ、出力は50Wであった。この電力増幅器の利得は約何dBか。',c:['7dB','10dB','14dB','17dB','50dB'],a:3,e:'50倍＝10倍×5倍＝10dB＋7dB＝17dB。A-5枠で3回出題(直近7年)の実物計算。',tip:'5倍=7dB（10dB−3dB）。10倍=10dB、2倍=3dBの2つから何でも組み立てる。'},
+{id:'xa27',t:'henchou',q:'単一正弦波で変調度50%に変調したAM(A3E)波をオシロスコープで観測した。包絡線の振幅の最小値Bと最大値Aの比 B/A の値として正しいものはどれか。',c:['1/4','1/3','1/2','2/3','3/4'],a:1,e:'B/A=(1−m)/(1+m)=0.5/1.5=1/3。A-3枠で3回出題(直近7年)の実物計算。',tip:'分子は「1−m」、分母は「1＋m」。m=0.5→1/3、m=1/3→1/2は答えごと暗記してよい。'}
+];
+
+/* ===== 本番形式バンク：B問題（小問各1点） ===== */
+const EXAM_B=[
+{id:'xb01',title:'自動等化器',kind:'fill',
+ passage:'次の記述は、デジタル無線通信に用いられるトランスバーサル形自動等化器について述べたものである。【ア】〜【オ】に入れるべき字句を下の番号から選べ。<br>(1) 遅延波などによる伝送特性のひずみは【ア】を発生させ、符号誤り率を劣化させる。<br>(2) トランスバーサル形自動等化器は、【イ】回路、可変係数の【ウ】器及び加算器などで構成され、【エ】領域で等化を行う。<br>(3) 等化器の係数は、伝送路の特性変化に応じて【オ】調整される。',
+ opts:['量子化雑音','符号間干渉','遅延','発振','分周','乗算','周波数','時間','手動で','自動的に'],ans:[1,2,5,7,9]},
+{id:'xb02',title:'多元接続',kind:'fill',
+ passage:'次の記述は、衛星通信に用いられる多元接続方式について述べたものである。【ア】〜【オ】に入れるべき字句を下の番号から選べ。<br>(1) FDMA方式は、複数の搬送波をその周波数帯域が互いに【ア】ように配置し、隣接搬送波間にガード【イ】を設ける。<br>(2) TDMA方式は、同一の搬送波周波数を【ウ】的に分割して各局に割り当て、バースト信号の衝突を防ぐため【エ】を設ける。<br>(3) CDMA方式は、各局に異なる【オ】を割り当て、同一周波数・同一時間で多重する。',
+ opts:['重なる','重ならない','タイム','バンド','時間','位相','ガードタイム','パイロット信号','拡散符号','誤り訂正符号'],ans:[1,3,4,6,8]},
+{id:'xb03',title:'誤り訂正',kind:'tf',
+ intro:'次の記述は、デジタル伝送における誤り制御について述べたものである。正しいものを「1」、誤っているものを「2」として答えよ。',
+ items:[
+  {text:'パリティ検査符号は、1ビットの誤りを訂正できる。',a:1},
+  {text:'ハミング符号は、1ビットの誤りを訂正できる。',a:0},
+  {text:'畳み込み符号の復号には、ビタビ復号が用いられる。',a:0},
+  {text:'ARQは、受信側で誤りを検出したとき、送信側へ再送を要求する方式である。',a:0},
+  {text:'インタリーブは、ランダム誤りを連続した誤りに変換するために行う。',a:1}]},
+{id:'xb04',title:'デジタルマルチメータ',kind:'fill',
+ passage:'次の記述は、デジタルマルチメータの原理的構成について述べたものである。【ア】〜【オ】に入れるべき字句を下の番号から選べ。<br>(1) 入力変換部は、被測定量(交流電圧、電流、抵抗など)を【ア】に変換する。<br>(2) 変換された信号は【イ】変換器でデジタル値に変換される。<br>(3) 二重積分形の変換方式は、【ウ】の影響を受けにくい特徴がある。<br>(4) 測定確度は、内部の【エ】の安定度に依存する。<br>(5) 結果は【オ】回路を経て数字で表示される。',
+ opts:['直流電圧','交流電流','D-A','A-D','雑音','直流分','基準電圧(基準発振器)','電源電圧','計数・表示','平滑'],ans:[0,3,4,6,8]},
+{id:'xb05',title:'SCPC方式',kind:'fill',
+ passage:'次の記述は、衛星通信に用いるSCPC方式について述べたものである。【ア】〜【オ】に入れるべき字句を下の番号から選べ。<br>(1) SCPC方式は【ア】多元接続方式の一つである。<br>(2) 一つの【イ】に一つのチャネルを割り当てる。<br>(3) 通信の要求が生じたときに回線を割り当てる【ウ】方式と組み合わせて用いられることが多い。<br>(4) 音声信号の無いとき搬送波を断にする【エ】制御により、衛星の電力を節約できる。<br>(5) 回線の利用効率は、固定割当てに比べて【オ】。',
+ opts:['周波数分割(FDMA)','時分割(TDMA)','タイムスロット','搬送波','デマンドアサインメント','プリアサインメント','ボイスアクティベーション','プレエンファシス','低い','高い'],ans:[0,3,4,6,9]},
+{id:'xb06',title:'雑音と雑音指数',kind:'tf',
+ intro:'次の記述は、雑音及び雑音指数について述べたものである。正しいものを「1」、誤っているものを「2」として答えよ。',
+ items:[
+  {text:'熱雑音の大きさは、絶対温度に比例する。',a:0},
+  {text:'散弾(ショット)雑音は、トランジスタなどの能動素子を流れる電流に伴って発生する。',a:0},
+  {text:'雑音指数は、値が大きいほど低雑音で良好な受信機である。',a:1},
+  {text:'多段増幅器の総合雑音指数には、初段の雑音指数と利得が最も大きく影響する。',a:0},
+  {text:'フリッカ雑音(1/f雑音)は、周波数が高いほど大きくなる。',a:1}]}
+];
+
+/* 実データ：出題枠マップ（直近7年・13回分の実績：令和元年7月〜令和7年7月） */
+const SLOTS=[
+ ['A-1','PLL周波数シンセサイザ(計算) or OFDM(ガードインターバル)','3回＋4回',1],
+ ['A-2','ロールオフフィルタ / QAM / FM占有帯域(カーソン計算)','各3回',1],
+ ['A-3','AM変調波の波形・変調度 B/A(計算) or 中波の同期放送','各3回',1],
+ ['A-5','QPSK復調器 or 電力増幅器の利得(dB計算)','4回＋3回',1],
+ ['A-6','二乗検波のひずみ率(計算) or リング復調(SSB)','各3回',0],
+ ['A-7〜8','PLL復調器／スーパヘテロダイン(影像・混信・現象)','3回×3種',1],
+ ['A-9','感度抑圧効果 or スケルチ','各3回',1],
+ ['A-10〜11','電源が2問(コンバータ・インバータ/コレクタ損失/鉛蓄電池/UPS/リチウム)','毎回ほぼ固定',1],
+ ['A-12','ILS(計器着陸システム)','5回ほぼ同文',1],
+ ['A-13','衛星通信の地球局構成(LNA/HPA)','3回',0],
+ ['A-14','多元接続(FDMA/TDMA/CDMA) or 誤り訂正','4回＋3回',1],
+ ['A-15','雑音の種類(熱雑音・散弾雑音など)','4回',1],
+ ['A-16','FM送信機S/N測定 or デジタル移動通信の特徴','4回＋3回',1],
+ ['A-20','サンプリングオシロスコープ','3回',0],
+ ['B-1','デジタルマルチメータ','4回',1],
+ ['B-2','SCPC方式','4回',1],
+ ['B-3','トランスバーサル形 自動等化器','5回',1],
+ ['B-4','スペアナによるスプリアス測定','3回',0],
+ ['B-5','SSB(受信機/通信方式)・BPSK復調など受信系の穴埋め','SSB系3回＋BPSK2回',0]
+];
+
+/* 実データ：頻出ランキング（直近7年・13回中の登場回数） */
+const FREQ=[
+ ['PSK(BPSK/QPSK)',13],['FM',13],['AM',13],['オシロスコープ・波形',13],['誤り訂正・符号',13],
+ ['QPSK',12],['SSB',12],['衛星通信',12],['電源',12],['レーダ・航法',12],
+ ['スーパヘテロダイン',11],['スペクトルアナライザ',11],['フェージング・等化',11],['減衰器',11],['スプリアス',10],
+ ['QAM',9],['変調度',9],['OFDM',8],['影像周波数',8],['標本化定理',7]
+];
+
+/* 実データ：繰り返し出題（直近7年で3回以上ほぼ同一） */
+const RECUR=[
+ [5,'測定','トランスバーサル形 自動等化器','B-3 / 2019→2024'],
+ [5,'レーダ・航法','ILS(計器着陸システム)','A-12 / 2020→2025'],
+ [4,'変調','QPSK復調器の構成','A-5 / 2019→2025'],
+ [4,'多重・衛星','多元接続方式(FDMA/TDMA/CDMA)','A-14 / 2019→2025'],
+ [4,'符号・雑音','雑音の種類(誤りを選ぶ)','A-15 / 2019→2024'],
+ [4,'測定','FM送信機のS/N測定法','A-16 / 2019→2025'],
+ [4,'電源','コンバータ及びインバータ','A-10 / 2020→2024'],
+ [4,'測定','デジタルマルチメータ','B-1 / 2020→2025'],
+ [4,'多重・衛星','SCPC方式','B-2 / 2020→2025'],
+ [4,'変調','OFDMガードインターバル','A-1ほか / 2021→2025'],
+ [4,'電源','無停電電源装置(UPS)','A-10 / 2021→2025'],
+ [3,'送信機','PLL周波数シンセサイザ(計算)','A-1 / 2019→2025'],
+ [3,'変調','ロールオフフィルタ','A-2 / 2019→2025'],
+ [3,'変調','AM波形と変調度 B/A(計算)','A-3 / 2019→2025'],
+ [3,'変調','二乗検波のひずみ率(計算)','A-6 / 2019→2025'],
+ [3,'送信機','電力増幅器の利得(dB計算)','A-5 / 2020→2024'],
+ [3,'受信機','PLL復調器','A-7 / 2019→2024'],
+ [3,'受信機','感度抑圧効果','A-9 / 2019→2025'],
+ [3,'受信機','中波の同期放送','A-3 / 2020→2025'],
+ [3,'受信機','スケルチ(ノイズ/キャリア)','A-9 / 2020→2023'],
+ [3,'受信機','デジタル移動通信の特徴','A-16 / 2020→2025'],
+ [3,'電源','定電圧回路のコレクタ損失(計算)','A-10 / 2019→2025'],
+ [3,'電源','鉛蓄電池の充電','A-11 / 2019→2024'],
+ [3,'多重・衛星','衛星地球局の構成','A-13 / 2020→2024'],
+ [3,'測定','サンプリングオシロスコープ','A-20 / 2019→2023'],
+ [3,'測定','スペアナによるスプリアス測定','B-4 / 2019→2025']
+];
+
+const TRICKS=[
+ ['① 過去問が答え。新問は捨てる','直近7年(13回分)から本番の8割前後(19〜22問)が再出題されている。6割(15問)で受かる試験。新作の難問は全員解けないので差がつかない。'],
+ ['② 出題枠マップで的を絞る','A-10〜11=電源2問、A-12=ILS、B-1=マルチメータ、B-3=等化器…枠ごとに中身がほぼ固定。マップの🔥印から覚えれば最小の暗記で最大の得点。'],
+ ['③「誤っているものを選べ」が最頻出','4つは正しく1つだけ変。数値すり替え、用語の逆転(増⇔減/直列⇔並列/水平⇔垂直)を疑え。ILSの「偏波が垂直」が好例。'],
+ ['④ 断定語はあやしい','「常に」「すべて」「完全に」「〜のみ」が入った選択肢は誤りの確率が高い。'],
+ ['⑤ B問題を捨てない','穴埋めは小設問ごとに各1点。全部わからなくても知ってる空欄だけで点が拾える。しかもB問題は内容の固定度が一番高い。'],
+ ['⑥ 組合せ問題は消去法','A・B・C全部わからなくてOK。1つ確実なら選択肢が一気に2択まで絞れる。'],
+ ['⑦ 計算問題は後回し','語句問題を先に確実に回収。計算は型が分かるものだけ。時間切れの捨て問はここに集める。'],
+ ['⑧ 最大の失点はマークミス','「誤っているもの」を「正しいもの」と読み違える事故が一番多い。設問の最後の一文を二度読みする癖をつける。']
+];
+
+/* 模試A問題の出題配分（本番準拠・計20問） */
+const MOCK_QUOTA={henchou:4,soushin:2,jushin:3,dengen:2,sokutei:3,tajuu:3,radar:1,fugou:2};
+
+/* ===== 保存 ===== */
+/* ファイルを直接開く(file://)場合などlocalStorageが使えないブラウザがあるため、
+   失敗してもアプリ全体が止まらないようガードする（その場合は保存されないだけ）。 */
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function lsRemove(k){try{localStorage.removeItem(k)}catch(e){}}
+const KEY='rikugiA_v2';
+let st;
+(function(){
+ try{st=JSON.parse(lsGet(KEY)||'null')}catch(e){st=null}
+ if(!st){
+   st={stats:{},learned:{},quizDone:0,quizOk:0};
+   let old=null;
+   try{old=JSON.parse(lsGet('rikugiA')||'null')}catch(e){}
+   if(old){st.quizDone=old.quizDone||0;st.quizOk=old.quizOk||0}
+ }
+ st.mockHistP=st.mockHistP||[];
+ if(st.mockBestP===undefined)st.mockBestP=null;
+})();
+function save(){lsSet(KEY,JSON.stringify(st))}
+function stat(id){return st.stats[id]||(st.stats[id]={ok:0,ng:0})}
+function isWeak(c){const s=st.stats[c.id];return s&&s.ng>0&&s.ng>=s.ok}
+function resetAll(){
+ if(confirm('この端末の進捗（覚えたカード・正答率・模試結果）を全部消します。いいですか？')){
+   lsRemove(KEY);lsRemove('rikugiA');location.reload();
+ }
+}
+
+/* ===== ナビ ===== */
+function go(tab){
+ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+ document.getElementById('p-'+tab).classList.add('on');
+ document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+ window.scrollTo(0,0);
+ if(tab==='home')renderHome();
+ if(tab==='quiz'&&!quizActive)nextQuiz();
+ if(tab==='mock')renderMockHome();
+}
+const LVL_META=[
+ [1,'🔥 Lv1 鉄板','直近7年に3回以上出題された問題そのもの。ここだけで約45〜55点ぶん'],
+ [2,'⭐ Lv2 決め打ち','頻出の核心。ここまでで約65〜75点'],
+ [3,'📗 Lv3 仕上げ','取りこぼし防止。ここまでで75点超え＝合格圏']
+];
+function renderHome(){
+ document.getElementById('s-learned').textContent=Object.keys(st.learned).length+'/'+CARDS.length;
+ document.getElementById('s-acc').textContent=st.quizDone?Math.round(st.quizOk/st.quizDone*100)+'%':'–';
+ document.getElementById('s-mock').textContent=st.mockBestP!=null?st.mockBestP+'/125':'–';
+ const max=FREQ[0][1];
+ document.getElementById('home-freq').innerHTML=FREQ.slice(0,6).map(([n,v])=>bar(n,v,max)).join('');
+ const days=Math.ceil((new Date('2026-07-08')-new Date())/86400000);
+ document.getElementById('countdown').textContent=days>0?`試験（令和8年7月期・7月上旬と想定）まで あと約${days}日`:'試験直前！「直前10分まとめ」を毎日見ること';
+ document.getElementById('roadmap').innerHTML=LVL_META.map(([n,label,gain])=>{
+   const cards=CARDS.filter(c=>levelOf(c)===n);
+   const done=cards.filter(c=>st.learned[c.id]).length;
+   const pct=cards.length?Math.round(done/cards.length*100):0;
+   return `<div style="margin:14px 0 4px">
+     <div style="display:flex;justify-content:space-between;font-size:13.5px"><b>${label}</b><span>${done} / ${cards.length}枚</span></div>
+     <div class="mockbar"><div class="fill" style="width:${pct}%;${pct>=100?'background:var(--good)':''}"></div></div>
+     <div class="muted">${gain}</div>
+     <button class="act ghost" style="margin-top:6px;padding:9px;font-size:13px" onclick="goLevel(${n})">このレベルを覚える →</button>
+   </div>`;
+ }).join('');
+}
+function goLevel(n){cardLvl=n;cardWeak=false;cardFilter='all';cardIdx=0;renderCardUI();showCard();go('cards')}
+function bar(n,v,max){
+ return `<div class="bar"><div class="name">${n}</div><div class="track"><div class="fill" style="width:${v/max*100}%"></div></div><div class="val">${v}回</div></div>`;
+}
+
+/* ===== フィルタ共通 ===== */
+/* レベル: 1=🔁繰り返し出題の鉄板 2=決め打ちあり 3=その他 */
+function levelOf(c){return c.r?1:(c.k?2:3)}
+function filterCards(topic,lvl,weakOnly){
+ let list=CARDS;
+ if(topic!=='all')list=list.filter(c=>c.t===topic);
+ if(lvl)list=list.filter(c=>levelOf(c)===lvl);
+ if(weakOnly)list=list.filter(isWeak);
+ return list;
+}
+function topicChips(elId,cur,fn){
+ const el=document.getElementById(elId);
+ let html=`<div class="chip ${cur==='all'?'on':''}" onclick="${fn}('all')">全部</div>`;
+ html+=Object.entries(TOPICS).map(([k,v])=>`<div class="chip ${cur===k?'on':''}" onclick="${fn}('${k}')">${v}</div>`).join('');
+ el.innerHTML=html;
+}
+
+/* ===== カード ===== */
+let cardFilter='all',cardLvl=0,cardWeak=false,cardIdx=0;
+function cardList(){return filterCards(cardFilter,cardLvl,cardWeak)}
+function setCardFilter(f){cardFilter=f;cardIdx=0;renderCardUI();showCard()}
+function setCardLvl(n){cardLvl=(cardLvl===n?0:n);cardIdx=0;renderCardUI();showCard()}
+function toggleCardWeak(){cardWeak=!cardWeak;cardIdx=0;renderCardUI();showCard()}
+function renderCardUI(){
+ topicChips('card-topics',cardFilter,'setCardFilter');
+ [1,2,3].forEach(n=>document.getElementById('card-l'+n).classList.toggle('on',cardLvl===n));
+ document.getElementById('card-weak').classList.toggle('on',cardWeak);
+ document.getElementById('bank-count').textContent='（全'+CARDS.length+'問収録）';
+}
+function showCard(){
+ const list=cardList();
+ const fc=document.getElementById('fc');
+ if(!list.length){
+   document.getElementById('fc-tag').textContent='';
+   document.getElementById('fc-q').textContent=cardWeak?'苦手カードはありません（間違えるとここに溜まります）':'該当カードなし';
+   document.getElementById('fc-count').textContent='';
+   fc.classList.remove('flip');return;
+ }
+ const c=list[cardIdx%list.length];
+ fc.classList.remove('flip');
+ document.getElementById('fc-tag').innerHTML=TOPICS[c.t]+(c.r?` <span class="rec">🔁 過去${c.r}回出題</span>`:'');
+ document.getElementById('fc-q').textContent=c.q;
+ document.getElementById('fc-a').textContent='答え： '+c.c[c.a];
+ document.getElementById('fc-e').textContent=c.e;
+ const k=document.getElementById('fc-k');
+ if(c.k){k.style.display='block';k.innerHTML='<b>決め打ち：</b> '+c.k}else{k.style.display='none'}
+ const tp=document.getElementById('fc-t');
+ if(c.tip){tp.style.display='block';tp.innerHTML='💡 <b>コツ：</b>'+c.tip}else{tp.style.display='none'}
+ document.getElementById('fc-count').textContent=`${(cardIdx%list.length)+1} / ${list.length}${st.learned[c.id]?' ✓覚えた':''}`;
+}
+function flip(){document.getElementById('fc').classList.toggle('flip')}
+function nextCard(){cardIdx++;showCard()}
+function prevCard(){const n=cardList().length||1;cardIdx=(cardIdx-1+n)%n;showCard()}
+function learnCard(){
+ const list=cardList();if(!list.length)return;
+ st.learned[list[cardIdx%list.length].id]=1;save();nextCard();
+}
+
+/* ===== クイズ ===== */
+let quizFilter='all',quizLvl=0,quizWeak=false,quizExam=false,curQ=null,answered=false,quizActive=false;
+function quizPool(){
+ if(quizExam){
+   let l=EXAM_A;
+   if(quizFilter!=='all')l=l.filter(q=>q.t===quizFilter);
+   if(quizWeak)l=l.filter(isWeak);
+   return l;
+ }
+ return filterCards(quizFilter,quizLvl,quizWeak);
+}
+function setQuizFilter(f){quizFilter=f;renderQuizUI();nextQuiz()}
+function setQuizLvl(n){quizLvl=(quizLvl===n?0:n);quizExam=false;renderQuizUI();nextQuiz()}
+function toggleQuizWeak(){quizWeak=!quizWeak;renderQuizUI();nextQuiz()}
+function toggleQuizExam(){quizExam=!quizExam;if(quizExam)quizLvl=0;renderQuizUI();nextQuiz()}
+function renderQuizUI(){
+ topicChips('quiz-topics',quizFilter,'setQuizFilter');
+ [1,2,3].forEach(n=>document.getElementById('quiz-l'+n).classList.toggle('on',quizLvl===n));
+ document.getElementById('quiz-weak').classList.toggle('on',quizWeak);
+ document.getElementById('quiz-exam').classList.toggle('on',quizExam);
+}
+function nextQuiz(){
+ quizActive=true;answered=false;
+ const pool=quizPool();
+ if(!pool.length){
+   document.getElementById('quiz-area').innerHTML='<p class="muted" style="margin-top:12px">'+(quizWeak?'苦手問題はありません。クイズで間違えるとここに溜まります。':'該当する問題がありません。')+'</p>';
+   return;
+ }
+ let cand=pool;
+ if(curQ&&pool.length>1)cand=pool.filter(c=>c.id!==curQ.id);
+ curQ=cand[Math.floor(Math.random()*cand.length)];
+ const opts=curQ.c.map((o,i)=>`<button class="opt" onclick="answer(${i})">${o}</button>`).join('');
+ document.getElementById('quiz-area').innerHTML=
+  `<div class="tag" style="margin-top:6px">${TOPICS[curQ.t]}${curQ.r?` <span class="rec" style="color:var(--warn)">🔁 過去${curQ.r}回出題</span>`:''}</div>
+   <div class="q" style="margin:6px 0 12px">${curQ.q}</div>${opts}<div id="qfb"></div>`;
+}
+function answer(i){
+ if(answered)return;answered=true;
+ const correct=curQ.a;
+ document.querySelectorAll('#quiz-area .opt').forEach((b,idx)=>{
+  b.classList.add('disabled');
+  if(idx===correct)b.classList.add('correct');
+  else if(idx===i)b.classList.add('wrong');
+ });
+ const ok=i===correct;
+ st.quizDone++;if(ok)st.quizOk++;
+ const s=stat(curQ.id);ok?s.ok++:s.ng++;save();
+ let fb=`<div class="feedback ${ok?'ok':'ng'}">${ok?'⭕ 正解！':'❌ 不正解'}　${curQ.e}`;
+ if(curQ.k)fb+=`<div class="kime" style="margin-top:8px"><b>決め打ち：</b> ${curQ.k}</div>`;
+ if(curQ.tip)fb+=`<div class="tipbox">💡 <b>コツ：</b>${curQ.tip}</div>`;
+ fb+=`</div><button class="act" style="margin-top:12px" onclick="nextQuiz()">次の問題 →</button>`;
+ document.getElementById('qfb').innerHTML=fb;
+}
+
+/* ===== 模試（本番形式：A問題20問×5点＋B問題5問×小問1点＝125点満点・75点合格） ===== */
+let mock=null;
+const KANA=['ア','イ','ウ','エ','オ'];
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function renderMockHome(){
+ if(mock){renderMockStep();return}
+ const hist=st.mockHistP.slice(-5).reverse().map(h=>
+   `<tr><td>${h.date}</td><td>${h.score}点</td><td>${h.score>=75?'✅合格':'❌不合格'}</td></tr>`).join('');
+ document.getElementById('mock-area').innerHTML=`
+  <p style="font-size:14px">本番と同じ構成：<b>A問題20問</b>（5択・各5点）＋<b>B問題5問</b>（穴埋め・正誤、小問各1点）＝<b>125点満点</b>。<b>75点（60%）以上で合格</b>。</p>
+  <p class="muted">目安40〜60分（本番の制限時間は2時間30分）。途中の正誤は表示されません。</p>
+  <button class="act" onclick="startMock()">模試を開始する</button>
+  ${st.mockBestP!=null?`<p style="margin-top:12px">自己ベスト：<b>${st.mockBestP}/125点</b> ${st.mockBestP>=75?'🎉合格ライン突破済み':''}</p>`:''}
+  ${hist?`<table class="mini-table"><tr><th>日付</th><th>得点</th><th>判定</th></tr>${hist}</table>`:''}`;
+}
+function startMock(){
+ const aqs=[];
+ for(const[t,n]of Object.entries(MOCK_QUOTA)){
+   aqs.push(...shuffleArr(EXAM_A.filter(q=>q.t===t).slice()).slice(0,n));
+ }
+ shuffleArr(aqs);
+ const bqs=shuffleArr(EXAM_B.slice()).slice(0,5);
+ mock={aqs,bqs,idx:0,phase:'A',aAns:[],bAns:[],tfTmp:[]};
+ renderMockStep();
+}
+function renderMockStep(){if(mock.phase==='A')renderMockA();else renderMockB()}
+function mockProgress(done){
+ const total=mock.aqs.length+mock.bqs.length;
+ return `<div class="mockbar"><div class="fill" style="width:${done/total*100}%"></div></div>`;
+}
+function renderMockA(){
+ const q=mock.aqs[mock.idx];
+ const opts=q.c.map((o,i)=>`<button class="opt" onclick="mockAnswerA(${i})">${i+1}　${o}</button>`).join('');
+ document.getElementById('mock-area').innerHTML=`
+  <div class="muted">A問題　第 ${mock.idx+1} 問 / ${mock.aqs.length}（各5点）　<a href="#" onclick="quitMock();return false" style="float:right">やめる</a></div>
+  ${mockProgress(mock.idx)}
+  <div class="q" style="margin:6px 0 12px">${q.q}</div>${opts}`;
+ window.scrollTo(0,0);
+}
+function mockAnswerA(i){
+ mock.aAns.push(i);mock.idx++;
+ if(mock.idx<mock.aqs.length){renderMockA()}
+ else{mock.phase='B';mock.idx=0;renderMockB()}
+}
+function renderMockB(){
+ const q=mock.bqs[mock.idx];
+ mock.tfTmp=[null,null,null,null,null];
+ let body='';
+ if(q.kind==='fill'){
+   body=`<div class="q" style="margin:6px 0 10px">${q.passage}</div>`;
+   body+=q.ans.map((_,bi)=>`<div class="bitem"><span class="bblank">${KANA[bi]}</span>
+     <select class="bsel" id="bsel${bi}"><option value="-1">— 字句を選択 —</option>${q.opts.map((o,oi)=>`<option value="${oi}">${oi+1}　${o}</option>`).join('')}</select></div>`).join('');
+ }else{
+   body=`<div class="q" style="margin:6px 0 10px">${q.intro}</div>`;
+   body+=q.items.map((it,bi)=>`<div class="bitem"><span class="bblank">${KANA[bi]}</span>　${it.text}
+     <div class="tfbtns"><button class="opt" id="btf${bi}-0" onclick="pickTF(${bi},0)">1　正しい</button><button class="opt" id="btf${bi}-1" onclick="pickTF(${bi},1)">2　誤り</button></div></div>`).join('');
+ }
+ document.getElementById('mock-area').innerHTML=`
+  <div class="muted">B問題　第 ${mock.idx+1} 問 / ${mock.bqs.length}（小問各1点）　<a href="#" onclick="quitMock();return false" style="float:right">やめる</a></div>
+  ${mockProgress(mock.aqs.length+mock.idx)}
+  ${body}
+  <button class="act" style="margin-top:12px" onclick="submitB()">回答して次へ</button>`;
+ window.scrollTo(0,0);
+}
+function pickTF(bi,v){
+ mock.tfTmp[bi]=v;
+ [0,1].forEach(x=>document.getElementById('btf'+bi+'-'+x).classList.toggle('sel',x===v));
+}
+function submitB(){
+ const q=mock.bqs[mock.idx];
+ let ansArr;
+ if(q.kind==='fill'){
+   ansArr=q.ans.map((_,bi)=>parseInt(document.getElementById('bsel'+bi).value));
+   if(ansArr.some(v=>v<0)){alert('未選択の空欄があります');return}
+ }else{
+   ansArr=mock.tfTmp.slice(0,q.items.length);
+   if(ansArr.some(v=>v===null)){alert('未回答の項目があります');return}
+ }
+ mock.bAns.push(ansArr);mock.idx++;
+ if(mock.idx<mock.bqs.length){renderMockB()}else{finishMock()}
+}
+function quitMock(){
+ if(confirm('模試を中断しますか？（記録されません）')){mock=null;renderMockHome()}
+}
+function finishMock(){
+ const aTotal=mock.aqs.length;
+ let aOk=0;const wrongA=[];
+ mock.aqs.forEach((q,i)=>{
+   const ok=mock.aAns[i]===q.a;
+   if(ok)aOk++;else wrongA.push(q);
+   const s=stat(q.id);ok?s.ok++:s.ng++;
+ });
+ let bOk=0,bTotal=0;const wrongB=[];
+ mock.bqs.forEach((q,qi)=>{
+   const user=mock.bAns[qi];
+   const corr=q.kind==='fill'?q.ans:q.items.map(it=>it.a);
+   corr.forEach((ca,bi)=>{
+     bTotal++;
+     if(user[bi]===ca)bOk++;
+     else wrongB.push({q,bi,ca});
+   });
+ });
+ const score=aOk*5+bOk;
+ const pass=score>=75;
+ const d=new Date();
+ st.mockHistP.push({date:(d.getMonth()+1)+'/'+d.getDate(),score});
+ if(st.mockHistP.length>20)st.mockHistP.shift();
+ if(st.mockBestP==null||score>st.mockBestP)st.mockBestP=score;
+ save();
+ const wrongAHtml=wrongA.map(q=>`<div class="wrongitem"><div class="qq">${q.q}</div><div class="aa">正解：${q.a+1}　${q.c[q.a]}</div><div class="muted">${q.e}</div>${q.tip?`<div class="tipbox">💡 <b>コツ：</b>${q.tip}</div>`:''}</div>`).join('');
+ const wrongBHtml=wrongB.map(w=>{
+   const label=w.q.kind==='fill'?`${w.ca+1}　${w.q.opts[w.ca]}`:(w.ca===0?'1　正しい':'2　誤り');
+   const sub=w.q.kind==='tf'?`<div class="muted">${w.q.items[w.bi].text}</div>`:'';
+   return `<div class="wrongitem"><div class="qq">〔${w.q.title}〕${KANA[w.bi]}</div>${sub}<div class="aa">正解：${label}</div></div>`;
+ }).join('');
+ mock=null;
+ document.getElementById('mock-area').innerHTML=`
+  <div class="verdict ${pass?'pass':'fail'}">${pass?'🎉 合格！':'もう少し！'}<br>${score} / 125点（合格は75点以上）</div>
+  <table class="mini-table">
+   <tr><th>A問題（各5点）</th><td>${aOk} / ${aTotal}問 ＝ ${aOk*5}点</td></tr>
+   <tr><th>B問題（小問各1点）</th><td>${bOk} / ${bTotal}小問 ＝ ${bOk}点</td></tr>
+  </table>
+  ${(wrongA.length||wrongB.length)?'<h2 style="font-size:15px;margin:16px 0 4px">❌ 間違えたところ（ここが伸びしろ）</h2>':'<p style="margin-top:12px">全問正解！本番もいけます！</p>'}
+  ${wrongAHtml}${wrongBHtml}
+  <button class="act" style="margin-top:12px" onclick="renderMockHome()">もどる</button>`;
+ window.scrollTo(0,0);
+}
+
+/* ===== 攻略タブ ===== */
+function renderStudy(){
+ document.getElementById('slot-map').innerHTML=SLOTS.map(([no,body,hit,hot])=>
+  `<div class="slot ${hot?'hot':''}"><div class="no">${hot?'🔥':''}${no}</div><div class="body">${body}<div class="hit">出題実績：${hit}</div></div></div>`).join('');
+ document.getElementById('matome').innerHTML=CARDS.filter(c=>c.k).map(c=>
+  `<div class="matome-item">${c.k}</div>`).join('');
+ document.getElementById('tricks-list').innerHTML=TRICKS.map(([h,b])=>
+  `<div class="trick"><div class="h">${h}</div><div>${b}</div></div>`).join('');
+ const max=FREQ[0][1];
+ document.getElementById('full-freq').innerHTML=FREQ.map(([n,v])=>bar(n,v,max)).join('');
+ document.getElementById('recur-list').innerHTML=RECUR.map(([n,tp,t,y])=>
+  `<div class="recur"><span class="n">${n}回出題</span> <span class="pill">${tp}</span><div class="t">${t}</div><div class="y">${y}</div></div>`).join('');
+}
+
+/* ===== init ===== */
+renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();
+</script>
+</body>
+</html>
