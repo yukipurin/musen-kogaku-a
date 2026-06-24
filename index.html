@@ -160,6 +160,36 @@
   .tfbtns{display:flex;gap:8px;margin-top:6px}
   .tfbtns .opt{flex:1;margin:0;text-align:center}
   .opt.sel{border-color:var(--accent);background:#173145}
+  /* 継続ゲーム：ヒーローダッシュボード */
+  .hero{background:linear-gradient(135deg,#1e293b,#0b1f33);border:1px solid var(--line);
+    border-radius:16px;padding:16px;margin:12px 0}
+  .hero-top{display:flex;align-items:center;gap:14px}
+  .ring{position:relative;width:84px;height:84px;flex-shrink:0}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .rc{font-size:11px}
+  .ring .rt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .rt b{font-size:20px;line-height:1}
+  .ring .rt span{font-size:9.5px;color:var(--sub)}
+  .hero-info{flex:1}
+  .streak{font-size:24px;font-weight:800}
+  .streak .fire{font-size:22px}
+  .hero-sub{font-size:12px;color:var(--sub);margin-top:2px}
+  .hero-cd{font-size:13px;margin-top:4px}
+  .hero-cd b{color:var(--warn);font-size:17px}
+  /* 合格メーター */
+  .meter{margin-top:18px}
+  .meter-lbl{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px}
+  .meter-bar{position:relative;height:22px;background:var(--card2);border-radius:11px}
+  .meter-fill{height:100%;border-radius:11px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .meter-pass{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--good);z-index:2}
+  .meter-pass::after{content:'合格75';position:absolute;top:-15px;left:-16px;font-size:9px;color:var(--good);white-space:nowrap}
+  .meter-now{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000;z-index:3}
+  /* 紙吹雪 */
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+  .confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;
+    animation:fall 1.2s ease-in forwards}
+  @keyframes fall{to{top:108%;opacity:.2}}
 </style>
 </head>
 <body>
@@ -171,6 +201,7 @@
 <main>
   <!-- HOME -->
   <section class="panel on" id="p-home">
+    <div class="hero" id="hero"></div>
     <div class="box" style="text-align:center">
       <div class="muted">あなたの進捗（この端末に保存）</div>
       <div class="row" style="margin-top:10px">
@@ -704,8 +735,48 @@ let st;
  }
  st.mockHistP=st.mockHistP||[];
  if(st.mockBestP===undefined)st.mockBestP=null;
+ // 継続ゲーム用フィールド
+ if(st.streak===undefined)st.streak=0;
+ if(st.bestStreak===undefined)st.bestStreak=0;
+ if(st.lastDay===undefined)st.lastDay=null;
+ if(st.todayCount===undefined)st.todayCount=0;
 })();
 function save(){lsSet(KEY,JSON.stringify(st))}
+const DAY_GOAL=10;
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+function ymd(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
+/* 1問解く/1枚覚えるたびに呼ぶ：ストリークと今日の問数を更新 */
+function bumpActivity(){
+ const today=todayStr();
+ if(st.lastDay!==today){
+   const y=new Date();y.setDate(y.getDate()-1);
+   st.streak=(st.lastDay===ymd(y))?st.streak+1:1;
+   if(st.streak>st.bestStreak)st.bestStreak=st.streak;
+   st.lastDay=today;st.todayCount=0;
+ }
+ st.todayCount++;save();
+}
+/* 合格予想点：覚えたカードのレベル別重み付け（目標値に整合） */
+function estScore(){
+ let l1=0,l2=0,l3=0;
+ CARDS.forEach(c=>{if(st.learned[c.id]){const lv=levelOf(c);if(lv===1)l1++;else if(lv===2)l2++;else l3++}});
+ return Math.min(125,Math.round(l1*1.35+l2*0.43+l3*0.38));
+}
+/* 紙吹雪（正解の演出） */
+function celebrate(){
+ const cols=['#38bdf8','#22c55e','#f59e0b','#a78bfa','#ef4444','#fde68a'];
+ const box=document.createElement('div');box.className='confetti';
+ for(let i=0;i<28;i++){
+   const p=document.createElement('i');
+   p.style.left=Math.random()*100+'%';
+   p.style.background=cols[i%cols.length];
+   p.style.animationDelay=(Math.random()*0.2)+'s';
+   p.style.transform='rotate('+(Math.random()*360)+'deg)';
+   box.appendChild(p);
+ }
+ document.body.appendChild(box);
+ setTimeout(()=>box.remove(),1300);
+}
 function stat(id){return st.stats[id]||(st.stats[id]={ok:0,ng:0})}
 function isWeak(c){const s=st.stats[c.id];return s&&s.ng>0&&s.ng>=s.ok}
 function resetAll(){
@@ -730,6 +801,7 @@ const LVL_META=[
  [3,'📗 Lv3 仕上げ','取りこぼし防止。ここまでで75点超え＝合格圏']
 ];
 function renderHome(){
+ renderHero();
  document.getElementById('s-learned').textContent=Object.keys(st.learned).length+'/'+CARDS.length;
  document.getElementById('s-acc').textContent=st.quizDone?Math.round(st.quizOk/st.quizDone*100)+'%':'–';
  document.getElementById('s-mock').textContent=st.mockBestP!=null?st.mockBestP+'/125':'–';
@@ -748,6 +820,42 @@ function renderHome(){
      <button class="act ghost" style="margin-top:6px;padding:9px;font-size:13px" onclick="goLevel(${n})">このレベルを覚える →</button>
    </div>`;
  }).join('');
+}
+function renderHero(){
+ // 今日が継続中か（昨日まで連続＋今日もやった or まだ）
+ const today=todayStr();const y=new Date();y.setDate(y.getDate()-1);
+ let shownStreak=st.streak;
+ if(st.lastDay!==today&&st.lastDay!==ymd(y))shownStreak=0; // 途切れている
+ const doneToday=(st.lastDay===today)?st.todayCount:0;
+ const goalPct=Math.min(100,Math.round(doneToday/DAY_GOAL*100));
+ const C=2*Math.PI*36, off=C*(1-goalPct/100);
+ const days=Math.ceil((new Date('2026-07-08')-new Date())/86400000);
+ const est=estScore();
+ const estPct=Math.round(est/125*100), passLeftPct=75/125*100;
+ const mcol=est>=75?'linear-gradient(90deg,#22c55e,#4ade80)':'linear-gradient(90deg,#38bdf8,#6366f1)';
+ const ringDone=goalPct>=100;
+ document.getElementById('hero').innerHTML=`
+  <div class="hero-top">
+    <div class="ring">
+      <svg width="84" height="84"><circle cx="42" cy="42" r="36" fill="none" stroke="#273449" stroke-width="8"/>
+        <circle cx="42" cy="42" r="36" fill="none" stroke="${ringDone?'#22c55e':'#38bdf8'}" stroke-width="8"
+          stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg>
+      <div class="rt"><b>${doneToday}</b><span>/${DAY_GOAL}問</span></div>
+    </div>
+    <div class="hero-info">
+      <div class="streak"><span class="fire">${shownStreak>0?'🔥':'💤'}</span> ${shownStreak}日連続</div>
+      <div class="hero-sub">${ringDone?'✅ 今日のノルマ達成！えらい🍺':doneToday>0?`今日あと${DAY_GOAL-doneToday}問でノルマ達成`:'今日はまだ0問。1問だけでもやろう'}　/　最高${st.bestStreak}日</div>
+      <div class="hero-cd">📅 試験まで <b>あと${days>0?days:0}日</b></div>
+    </div>
+  </div>
+  <div class="meter">
+    <div class="meter-lbl"><span>合格予想点（覚えたカードから推定）</span><span><b>${est}</b>/125点</span></div>
+    <div class="meter-bar">
+      <div class="meter-fill" style="width:${estPct}%;background:${mcol}"></div>
+      <div class="meter-pass" style="left:${passLeftPct}%"></div>
+      <div class="meter-now">${est>=75?'🎉 合格圏！':`合格まであと${75-est}点`}</div>
+    </div>
+  </div>`;
 }
 function goLevel(n){cardLvl=n;cardWeak=false;cardFilter='all';cardIdx=0;renderCardUI();showCard();go('cards')}
 function bar(n,v,max){
@@ -809,7 +917,11 @@ function nextCard(){cardIdx++;showCard()}
 function prevCard(){const n=cardList().length||1;cardIdx=(cardIdx-1+n)%n;showCard()}
 function learnCard(){
  const list=cardList();if(!list.length)return;
- st.learned[list[cardIdx%list.length].id]=1;save();nextCard();
+ const card=list[cardIdx%list.length];
+ const already=st.learned[card.id];
+ st.learned[card.id]=1;save();
+ if(!already)bumpActivity();
+ nextCard();
 }
 
 /* ===== クイズ ===== */
@@ -859,6 +971,7 @@ function answer(i){
  const ok=i===correct;
  st.quizDone++;if(ok)st.quizOk++;
  const s=stat(curQ.id);ok?s.ok++:s.ng++;save();
+ bumpActivity();if(ok)celebrate();
  let fb=`<div class="feedback ${ok?'ok':'ng'}">${ok?'⭕ 正解！':'❌ 不正解'}　${curQ.e}`;
  if(curQ.k)fb+=`<div class="kime" style="margin-top:8px"><b>決め打ち：</b> ${curQ.k}</div>`;
  if(curQ.tip)fb+=`<div class="tipbox">💡 <b>コツ：</b>${curQ.tip}</div>`;
@@ -1057,6 +1170,7 @@ function drillAnswerA(i){
   if(idx===correct)b.classList.add('correct');else if(idx===i)b.classList.add('wrong');
  });
  const ok=i===correct;const s=stat(q.id);ok?s.ok++:s.ng++;save();
+ bumpActivity();if(ok)celebrate();
  let fb=`<div class="feedback ${ok?'ok':'ng'}">${ok?'⭕ 正解！':'❌ 不正解（正解は '+(correct+1)+'）'}　${q.e}`;
  if(q.k)fb+=`<div class="kime" style="margin-top:8px"><b>決め打ち：</b> ${q.k}</div>`;
  if(q.tip)fb+=`<div class="tipbox">💡 <b>コツ：</b>${q.tip}</div>`;
@@ -1101,6 +1215,7 @@ function drillSubmitB(){
    return `<div style="margin:4px 0;font-size:13px">${hit?'⭕':'❌'} <b>${KANA[bi]}</b> ${sub}<span style="color:var(--good)">→ ${label}</span></div>`;
  }).join('');
  const s=stat(q.id);s.ok+=ok;s.ng+=(corr.length-ok);save();
+ bumpActivity();if(ok===corr.length)celebrate();
  document.getElementById('dsub').style.display='none';
  document.getElementById('dfb').innerHTML=`<div class="feedback ${ok===corr.length?'ok':'ng'}" style="margin-top:12px">
    ${ok}/${corr.length} 正解<div style="margin-top:6px">${rows}</div></div>
