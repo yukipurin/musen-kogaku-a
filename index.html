@@ -121,6 +121,19 @@
   .matome-item .ex{color:var(--sub);font-size:12.5px;border-top:1px dashed var(--line);
     margin-top:6px;padding-top:5px}
   .matome-item .ex b{color:var(--good)}
+  /* 値→答え早見表 */
+  .cheat{background:var(--card2);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;margin:8px 0}
+  .cheat .ch-h{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .cheat .ch-name{font-weight:700;font-size:14px;color:var(--ink)}
+  .cheat .ch-freq{font-size:11px;font-weight:700;color:#062536;background:var(--warn);
+    border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .cheat.hot .ch-freq{background:var(--bad);color:#fff}
+  .cheat .ch-f{font-size:12.5px;color:var(--sub);margin-bottom:5px}
+  .cheat .ch-f b{color:var(--accent)}
+  .cheat .ch-map{font-size:13px}
+  .cheat .ch-map b{color:var(--good);font-weight:700}
+  .cheat .ch-map .arr{color:var(--warn);font-weight:700}
   /* B問題 */
   .bsel{width:100%;background:var(--card2);color:var(--ink);border:1px solid var(--line);
     border-radius:10px;padding:11px;font-size:14px;margin:4px 0;-webkit-appearance:none}
@@ -309,6 +322,11 @@
       <div class="tipbox">単位換算：k=10³、M=10⁶、μ=10⁻⁶、n=10⁻⁹。<b>指数は掛け算→足し算、割り算→引き算</b>になる。</div>
       <div class="tipbox">口グセで覚える：変調度は<b>「差÷和」</b>／カーソンは<b>「足して2倍」</b>／コレクタ損失は<b>「大きい方×大きい方」</b>／量子化は<b>「1bit＝6dB」</b>。</div>
       <div class="tipbox">それでも分からない計算は<b>即スキップ</b>。1問5点は語句問題と同じ価値。悩む時間で語句2問見直す方が得。</div>
+    </div>
+    <div class="box">
+      <h2>🎯 計算「値→答え」早見表（直近7年・全型）</h2>
+      <div class="muted" style="margin-bottom:8px">直近7年(13回)の計算問題を全分析。<b>本物の計算はこの型で出尽くし</b>。問題に出る値→答えの対応をそのまま暗記すれば、計算が苦手でも5〜7問中4〜5問取れます。赤バッジ＝ほぼ毎回出る最優先。</div>
+      <details open><summary>開く / 閉じる</summary><div id="cheatsheet"></div></details>
     </div>
     <div class="box">
       <h2>🃏 裏技・テクニック</h2>
@@ -601,6 +619,35 @@ const TRICKS=[
  ['⑥ 組合せ問題は消去法','A・B・C全部わからなくてOK。1つ確実なら選択肢が一気に2択まで絞れる。'],
  ['⑦ 計算問題は後回し','語句問題を先に確実に回収。計算は型が分かるものだけ。時間切れの捨て問はここに集める。'],
  ['⑧ 最大の失点はマークミス','「誤っているもの」を「正しいもの」と読み違える事故が一番多い。設問の最後の一文を二度読みする癖をつける。']
+];
+
+/* 計算「値→答え」早見表（直近7年・全23型）
+   [出題回数, 最優先か(true=赤), 型名, 公式(口語), 値→答えマッピングHTML] */
+const CHEAT=[
+ [6,true,'オシロの波形読取り','図の目盛を数えるだけ。立上り時間やパルス幅＝「目盛の数 × 1目盛の時間」。','図ごとに数値は変わる → <b>計算ではなく目盛の読み取り</b>。落ち着いて目盛を数えれば取れる'],
+ [5,true,'変調度（電力から）','全平均電力＝搬送波電力 ×（1＋m²/2）。','搬送波100W→全108W なら <span class="arr">→</span> m＝<b>40%</b><br>全124W・変調度50% <span class="arr">→</span> 搬送波<b>110W</b>'],
+ [5,true,'PCM・標本化','通信速度＝<b>2 × 最高周波数 × ビット数</b>（標本化定理の最小）。','8kHz×8bit <span class="arr">→</span> <b>128kbps</b><br>8kHz×16bit <span class="arr">→</span> <b>256kbps</b><br>16kHz×16bit <span class="arr">→</span> <b>512kbps</b>'],
+ [4,true,'雑音指数 NF','NF＝出力－入力－利得（全部dBで引き算）。','入力−118/出力−100/利得14 <span class="arr">→</span> <b>4dB</b><br>出力−27/入力−100/利得70 <span class="arr">→</span> <b>3dB</b><br>※答えはほぼ<b>3か4dB</b>'],
+ [3,false,'PLL周波数シンセサイザ','基準＝水晶fx ÷ N1。出力fo＝基準 × N2 × Np。','fx10MHz・N1=5 <span class="arr">→</span> 基準2MHz。あとは ×N2×Np するだけ'],
+ [3,false,'コレクタ損失（定電圧回路）','損失＝（入力の大きい方 － 出力の小さい方）× 最大電流。','20〜28V/10〜14V/1A <span class="arr">→</span> (28−10)×1＝<b>18W</b><br>21〜29V/9〜18V/0.5A <span class="arr">→</span> (29−9)×0.5＝<b>10W</b>'],
+ [3,false,'電力増幅器の利得','利得＝10log(出力÷入力)＋整合器の損失〔dB〕。','1W→50W(損1) <span class="arr">→</span> 17+1＝<b>18dB</b><br>1W→10W(損1) <span class="arr">→</span> 10+1＝<b>11dB</b><br>1W→40W(損2) <span class="arr">→</span> 16+2＝<b>18dB</b>'],
+ [3,false,'リング復調の中間周波','中間周波＝基準搬送波 ± 信号（上側波は＋、下側波は−）。','搬送波453.5kHz＋上側波1kHz <span class="arr">→</span> <b>454.5kHz</b>'],
+ [3,false,'C/N から送信電力','全部dBで足し引きし、最後にWへ直す。C＝(C/N)＋雑音、送信電力＝C＋伝搬損＋給電損×2−利得×2。','答えは毎回 <b>2W</b> か <b>5W</b> あたりの小さい値'],
+ [3,false,'熱雑音電圧','Vn＝√(4kTBR)。','抵抗100〜300Ω・帯域2〜3MHz <span class="arr">→</span> 答えは<b>2・3・4 ×10⁻⁶V</b>のどれか'],
+ [2,false,'二信号選択度の整合抵抗','整合回路の抵抗を求める定型。内部抵抗50Ω・入力75Ωで固定。','RS=50・Rin=75 <span class="arr">→</span> R2＝<b>45Ω</b>（毎回この値）'],
+ [2,false,'電圧変動率','(無負荷電圧 － 定格電圧) ÷ 定格電圧 × 100〔%〕。','グラフの「電流0の電圧」と「定格電流の電圧」を読んで当てはめる'],
+ [2,false,'のこぎり波→正弦波の実効値','正弦波の指示値＝のこぎり波の指示値 × √(3/2)。','1V <span class="arr">→</span> <b>√(3/2)</b>／2V <span class="arr">→</span> <b>√6</b>'],
+ [2,false,'影像周波数','受信周波数 ±（2×中間周波数）。中間455kHzなら±910。','局発が高い <span class="arr">→</span> 受信<b>＋910</b>／低い <span class="arr">→</span> 受信<b>−910</b>'],
+ [2,false,'レーダの距離分解能・最小探知距離','距離＝<b>150 × パルス幅〔μs〕</b>〔m〕。','0.6μs <span class="arr">→</span> <b>90m</b>／1μs <span class="arr">→</span> <b>150m</b>'],
+ [2,false,'レーダの最大探知距離 Rmax','Rmaxは4乗根で効く。','送信電力×9 <span class="arr">→</span> ×⁴√9＝<b>17.3km</b><br>最小受信電力×0.25 <span class="arr">→</span> ×√2＝<b>14km</b>'],
+ [2,false,'ビット誤り率の測定時間','t＝1 ÷ (伝送速度 × 誤り率)。','20Mbps・誤り率1×10⁻⁸ <span class="arr">→</span> <b>5秒</b><br>5Mbps <span class="arr">→</span> <b>20秒</b>'],
+ [2,false,'スペアナの雑音電力','電力＝電力密度 × 帯域幅 → dBmへ。','1×10⁻¹²×100kHz <span class="arr">→</span> <b>−40dBm</b><br>5×10⁻¹⁵×200kHz <span class="arr">→</span> <b>−60dBm</b>'],
+ [2,false,'レーダの平均電力','平均＝尖頭電力 ×（パルス幅 × 繰返し周波数）。','尖頭50kW・1μs・1kHz <span class="arr">→</span> <b>50W</b>'],
+ [2,false,'ドプラ速度','速度＝ドプラ周波数 × 光速 ÷(2×レーダ周波数×cosθ)。','1000Hz <span class="arr">→</span> <b>62km/h</b>／800Hz <span class="arr">→</span> <b>50km/h</b>'],
+ [2,false,'レーダ最小受信電力 Si','Si＝kTB〔dBm〕＋雑音指数＋S/N（全部dBで足す）。','kTB=8×10⁻¹⁵/NF2/SN20 <span class="arr">→</span> <b>−88dBm</b><br>5×10⁻¹⁵/NF2/SN30 <span class="arr">→</span> <b>−80dBm</b>'],
+ [1,false,'電力→電圧（dBm）','電圧＝√(電力 × 抵抗)。','−73dBm・50Ω <span class="arr">→</span> <b>50μV</b>'],
+ [1,false,'整流回路の逆方向電圧','逆電圧の最大＝√2 × 実効値（回路により2倍）。','実効値10V <span class="arr">→</span> <b>14V</b>'],
+ [1,false,'周波数カウンタの誤差','誤差＝1 ÷ ゲート時間。','計数が1個ズレ・ゲート2ms <span class="arr">→</span> <b>500Hz</b>'],
 ];
 
 /* 模試A問題の出題配分（本番準拠・計20問） */
@@ -926,6 +973,8 @@ function renderStudy(){
  document.getElementById('full-freq').innerHTML=FREQ.map(([n,v])=>bar(n,v,max)).join('');
  document.getElementById('recur-list').innerHTML=RECUR.map(([n,tp,t,y])=>
   `<div class="recur"><span class="n">${n}回出題</span> <span class="pill">${tp}</span><div class="t">${t}</div><div class="y">${y}</div></div>`).join('');
+ document.getElementById('cheatsheet').innerHTML=CHEAT.map(([freq,hot,name,formula,map])=>
+  `<div class="cheat ${hot?'hot':''}"><div class="ch-h"><span class="ch-name">${name}</span><span class="ch-freq">${freq}回/7年</span></div><div class="ch-f">📐 ${formula}</div><div class="ch-map">${map}</div></div>`).join('');
 }
 
 /* ===== init ===== */
