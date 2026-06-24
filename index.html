@@ -101,6 +101,24 @@
   .slot .body{flex:1;font-size:13.5px}
   .slot .hit{color:var(--sub);font-size:11px}
   .slot.hot{border-color:var(--warn)}
+  /* 分野ブロック図 */
+  .blk{border-radius:12px;padding:11px 13px;margin:9px 0;border-left:5px solid var(--accent);
+    background:var(--card2)}
+  .blk.power{border-left-color:var(--good)}
+  .blk.nav{border-left-color:var(--warn)}
+  .blk.meas{border-left-color:#a78bfa}
+  .blk .rng{font-weight:700;font-size:15px;color:var(--ink)}
+  .blk .nm{font-size:13px;color:var(--accent);font-weight:700;margin:2px 0 4px}
+  .blk.power .nm{color:var(--good)} .blk.nav .nm{color:var(--warn)} .blk.meas .nm{color:#a78bfa}
+  .blk .dsc{font-size:12.5px;color:var(--sub)}
+  .blk .lock{font-size:11px;font-weight:700;color:#062536;background:var(--good);
+    border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+  /* 本番順ドリル */
+  .drill-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2px 0 8px}
+  .drill-no{font-weight:700;color:#062536;background:var(--accent);border-radius:8px;
+    padding:3px 10px;font-size:14px}
+  .drill-no.b{background:var(--warn)}
+  .drill-slot{font-size:12px;color:var(--sub)}
   /* mock */
   .mockbar{height:8px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px 0}
   .mockbar .fill{height:100%;background:var(--accent);transition:width .3s}
@@ -237,9 +255,14 @@
 
   <!-- QUIZ -->
   <section class="panel" id="p-quiz">
+    <div class="box" id="drill-box">
+      <h2>📋 本番順ドリル（A-1から順番に）</h2>
+      <div class="muted">本番そっくりの5択・穴埋めを、出題される番号順（A問題→B問題）に1問ずつ。答えると即・正解＆解説＆コツが出ます。○✕ではなく本物の問題形式です。</div>
+      <div id="drill-area"></div>
+    </div>
     <div class="box">
-      <h2>📝 クイズ</h2>
-      <div class="muted">答えるとすぐ解説。間違えた問題は自動で「苦手」に記録されます。</div>
+      <h2>📝 分野別クイズ</h2>
+      <div class="muted">分野やレベルで絞って練習。答えるとすぐ解説。間違えた問題は自動で「苦手」に記録されます。</div>
       <div class="chips" id="quiz-topics"></div>
       <div class="chips">
         <div class="chip mode" id="quiz-l1" onclick="setQuizLvl(1)">🔥 Lv1鉄板</div>
@@ -263,7 +286,17 @@
   <!-- STUDY (攻略) -->
   <section class="panel" id="p-study">
     <div class="box">
-      <h2>🗺 出題枠マップ（決め打ち最優先）</h2>
+      <h2>📐 何問目に何が出る？（分野ブロック）</h2>
+      <div class="muted" style="margin-bottom:8px">試験は番号順に分野がブロックで固まっています（直近7年13回の実データ）。<b>問題番号を見れば分野がわかる</b>＝得意分野が来たら確実に取りに行く。中身は毎回変わるので「位置で分野を予測→その分野のカードで答えを覚える」が正解。</div>
+      <div class="blk"><div class="rng">A-1 〜 A-8</div><div class="nm">変調・送信機・受信機</div><div class="dsc">FM／AM／PSK・QAMなどデジタル変調、FM送信機、スーパヘテロダイン・影像周波数。前半は変調まわりが連続。</div></div>
+      <div class="blk power"><div class="rng">A-9 〜 A-11 <span class="lock">🔒ほぼ確定</span></div><div class="nm">電源</div><div class="dsc">定電圧回路・コレクタ損失・整流・蓄電池・UPS。A-10は13回中8回が電源。あなたの得意分野＝ここで2〜3問まとめ取り。</div></div>
+      <div class="blk nav"><div class="rng">A-12 〜 A-14 <span class="lock" style="background:var(--warn)">🔒固定</span></div><div class="nm">航法・レーダー・多元接続</div><div class="dsc">A-12＝ILS（計器着陸）かレーダー、A-13＝レーダー計算、A-14＝多元接続/衛星。</div></div>
+      <div class="blk"><div class="rng">A-15 〜 A-16</div><div class="nm">雑音・符号・衛星</div><div class="dsc">雑音指数、誤り訂正・PCM符号、衛星通信。計算と語句が混在。</div></div>
+      <div class="blk meas"><div class="rng">A-17 〜 A-20 <span class="lock" style="background:#a78bfa">🔒固定</span></div><div class="nm">測定</div><div class="dsc">オシロの波形読み取り（最頻出計算）、スペアナ、減衰器、周波数計。早見表の測定型がここに集中。</div></div>
+      <div class="blk meas"><div class="rng">B-1 〜 B-5</div><div class="nm">穴埋め（B-1＝測定器、B-4＝FMが定番）</div><div class="dsc">小問ア〜オ各1点。B-1はデジタルマルチメータ等の測定器、B-4はFM（占有帯域/プレエンファシス）が頻出。固定度が高く点を拾いやすい。</div></div>
+    </div>
+    <div class="box">
+      <h2>🗺 出題枠マップ（番号ごとの実績）</h2>
       <div class="muted" style="margin-bottom:8px">直近7年・13回分（令和元年7月〜令和7年7月）の解析結果。「この問題番号にはコレが出る」の実績。🔥＝特に固定度が高い。</div>
       <div id="slot-map"></div>
     </div>
@@ -977,8 +1010,117 @@ function renderStudy(){
   `<div class="cheat ${hot?'hot':''}"><div class="ch-h"><span class="ch-name">${name}</span><span class="ch-freq">${freq}回/7年</span></div><div class="ch-f">📐 ${formula}</div><div class="ch-map">${map}</div></div>`).join('');
 }
 
+/* ===== 本番順ドリル（番号順・本物の形式・即フィードバック） ===== */
+const DRILL_A=[['xa01','A-1'],['xa02','A-2'],['xa03','A-2'],['xa04','A-3'],['xa27','A-3'],['xa10','A-3'],['xa26','A-4'],['xa05','A-5'],['xa11','A-5'],['xa06','A-6'],['xa07','A-7'],['xa08','A-8'],['xa09','A-9'],['xa14','A-9'],['xa12','A-10'],['xa13','A-11'],['xa22','A-12'],['xa23','A-13'],['xa19','A-13'],['xa21','A-14'],['xa24','A-15'],['xa25','A-16'],['xa20','A-16'],['xa18','A-16'],['xa17','A-17'],['xa16','A-18'],['xa15','A-19']];
+const DRILL_B=[['xb04','B-1'],['xb02','B-2'],['xb01','B-3'],['xb03','B-4'],['xb06','B-5'],['xb05','B-2']];
+let drill=null;
+function buildDrillSeq(){
+ const seq=[];
+ DRILL_A.forEach(([id,slot])=>{const q=EXAM_A.find(x=>x.id===id);if(q)seq.push({type:'A',q,slot})});
+ DRILL_B.forEach(([id,slot])=>{const q=EXAM_B.find(x=>x.id===id);if(q)seq.push({type:'B',q,slot})});
+ return seq;
+}
+function renderDrill(){
+ if(drill){drillRender();return}
+ const seq=buildDrillSeq();
+ const nA=seq.filter(s=>s.type==='A').length, nB=seq.filter(s=>s.type==='B').length;
+ document.getElementById('drill-area').innerHTML=`
+  <p style="font-size:14px;margin:10px 0 4px">A問題 <b>${nA}問</b> → B問題 <b>${nB}問</b> を、本番の番号順に解いていきます。</p>
+  <p class="muted" style="margin:0 0 10px">採点なし・1問ずつ答え合わせ。分からなければ答えを見て覚えるだけでOK。</p>
+  <button class="act" onclick="startDrill()">▶ 最初から始める（A-1へ）</button>`;
+}
+function startDrill(){drill={seq:buildDrillSeq(),idx:0,tf:[]};drillRender()}
+function quitDrill(){drill=null;renderDrill();window.scrollTo(0,0)}
+function drillBar(){const t=drill.seq.length;return `<div class="mockbar"><div class="fill" style="width:${drill.idx/t*100}%"></div></div>`}
+function drillHead(){
+ const cur=drill.seq[drill.idx];const isB=cur.type==='B';
+ const idxInType=drill.seq.slice(0,drill.idx+1).filter(s=>s.type===cur.type).length;
+ const totType=drill.seq.filter(s=>s.type===cur.type).length;
+ return `<div class="drill-hd"><span class="drill-no ${isB?'b':''}">${cur.slot}</span>
+   <span class="drill-slot">${cur.type}問題 ${idxInType}/${totType}</span>
+   <a href="#" onclick="if(confirm('ドリルを中断しますか？'))quitDrill();return false" style="margin-left:auto;font-size:12px">やめる</a></div>${drillBar()}`;
+}
+function drillRender(){drill.seq[drill.idx].type==='A'?drillRenderA():drillRenderB()}
+function drillRenderA(){
+ drill.answered=false;
+ const q=drill.seq[drill.idx].q;
+ const opts=q.c.map((o,i)=>`<button class="opt" onclick="drillAnswerA(${i})">${i+1}　${o}</button>`).join('');
+ document.getElementById('drill-area').innerHTML=`${drillHead()}
+   <div class="q" style="margin:6px 0 12px">${q.q}</div>${opts}<div id="dfb"></div>`;
+ window.scrollTo(0,0);
+}
+function drillAnswerA(i){
+ if(drill.answered)return;drill.answered=true;
+ const q=drill.seq[drill.idx].q;const correct=q.a;
+ document.querySelectorAll('#drill-area .opt').forEach((b,idx)=>{
+  b.classList.add('disabled');
+  if(idx===correct)b.classList.add('correct');else if(idx===i)b.classList.add('wrong');
+ });
+ const ok=i===correct;const s=stat(q.id);ok?s.ok++:s.ng++;save();
+ let fb=`<div class="feedback ${ok?'ok':'ng'}">${ok?'⭕ 正解！':'❌ 不正解（正解は '+(correct+1)+'）'}　${q.e}`;
+ if(q.k)fb+=`<div class="kime" style="margin-top:8px"><b>決め打ち：</b> ${q.k}</div>`;
+ if(q.tip)fb+=`<div class="tipbox">💡 <b>コツ：</b>${q.tip}</div>`;
+ fb+=`</div><button class="act" style="margin-top:12px" onclick="drillNext()">次へ →</button>`;
+ document.getElementById('dfb').innerHTML=fb;
+}
+function drillRenderB(){
+ drill.answered=false;drill.tf=[null,null,null,null,null];
+ const q=drill.seq[drill.idx].q;let body='';
+ if(q.kind==='fill'){
+   body=`<div class="q" style="margin:6px 0 10px">${q.passage}</div>`;
+   body+=q.ans.map((_,bi)=>`<div class="bitem"><span class="bblank">${KANA[bi]}</span>
+     <select class="bsel" id="dsel${bi}"><option value="-1">— 字句を選択 —</option>${q.opts.map((o,oi)=>`<option value="${oi}">${oi+1}　${o}</option>`).join('')}</select></div>`).join('');
+ }else{
+   body=`<div class="q" style="margin:6px 0 10px">${q.intro}</div>`;
+   body+=q.items.map((it,bi)=>`<div class="bitem"><span class="bblank">${KANA[bi]}</span>　${it.text}
+     <div class="tfbtns"><button class="opt" id="dtf${bi}-0" onclick="drillTF(${bi},0)">1　正しい</button><button class="opt" id="dtf${bi}-1" onclick="drillTF(${bi},1)">2　誤り</button></div></div>`).join('');
+ }
+ document.getElementById('drill-area').innerHTML=`${drillHead()}
+   <div style="font-weight:700;color:var(--warn);font-size:13px;margin:4px 0">〔${q.title}〕</div>
+   ${body}<button class="act" style="margin-top:12px" id="dsub" onclick="drillSubmitB()">答え合わせ</button><div id="dfb"></div>`;
+ window.scrollTo(0,0);
+}
+function drillTF(bi,v){drill.tf[bi]=v;[0,1].forEach(x=>document.getElementById('dtf'+bi+'-'+x).classList.toggle('sel',x===v))}
+function drillSubmitB(){
+ if(drill.answered)return;
+ const q=drill.seq[drill.idx].q;let user,corr;
+ if(q.kind==='fill'){
+   user=q.ans.map((_,bi)=>parseInt(document.getElementById('dsel'+bi).value));
+   if(user.some(v=>v<0)){alert('未選択の空欄があります');return}
+   corr=q.ans;
+ }else{
+   user=drill.tf.slice(0,q.items.length);
+   if(user.some(v=>v===null)){alert('未回答の項目があります');return}
+   corr=q.items.map(it=>it.a);
+ }
+ drill.answered=true;
+ let ok=0;const rows=corr.map((ca,bi)=>{
+   const hit=user[bi]===ca;if(hit)ok++;
+   const label=q.kind==='fill'?`${ca+1}　${q.opts[ca]}`:(ca===0?'正しい':'誤り');
+   const sub=q.kind==='tf'?`${q.items[bi].text}　`:'';
+   return `<div style="margin:4px 0;font-size:13px">${hit?'⭕':'❌'} <b>${KANA[bi]}</b> ${sub}<span style="color:var(--good)">→ ${label}</span></div>`;
+ }).join('');
+ const s=stat(q.id);s.ok+=ok;s.ng+=(corr.length-ok);save();
+ document.getElementById('dsub').style.display='none';
+ document.getElementById('dfb').innerHTML=`<div class="feedback ${ok===corr.length?'ok':'ng'}" style="margin-top:12px">
+   ${ok}/${corr.length} 正解<div style="margin-top:6px">${rows}</div></div>
+   <button class="act" style="margin-top:12px" onclick="drillNext()">次へ →</button>`;
+}
+function drillNext(){
+ drill.idx++;
+ if(drill.idx<drill.seq.length){drillRender()}
+ else{
+   drill=null;
+   document.getElementById('drill-area').innerHTML=`
+    <div class="verdict pass">🎉 1周おつかれさま！<br>本番の流れはこれでバッチリ</div>
+    <p class="muted">同じ問題でも、2周目は答えを隠して解けるか試そう。仕上げは「模試」タブで125点形式に挑戦。</p>
+    <button class="act" onclick="startDrill()">▶ もう1周する</button>`;
+   window.scrollTo(0,0);
+ }
+}
+
 /* ===== init ===== */
-renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();
+renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();renderDrill();
 </script>
 </body>
 </html>
