@@ -6,7 +6,10 @@
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="無線工学A">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
 <title>２陸技 無線工学A 合格アプリ</title>
 <style>
   :root{
@@ -190,6 +193,35 @@
   .confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;
     animation:fall 1.2s ease-in forwards}
   @keyframes fall{to{top:108%;opacity:.2}}
+  /* トースト（バッジ獲得通知） */
+  .toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+    background:#0b1f33;border:1px solid var(--warn);color:#fde68a;font-weight:700;font-size:14px;
+    padding:12px 18px;border-radius:999px;z-index:1000;opacity:0;transition:.35s;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* 今日まだ！警告バナー */
+  .nag{display:flex;align-items:center;gap:10px;background:#3d1414;border:1px solid var(--bad);
+    border-radius:14px;padding:13px 15px;margin:12px 0;cursor:pointer;animation:pulse 1.6s infinite}
+  .nag .ic{font-size:24px}
+  .nag .tx{flex:1;font-size:14px;font-weight:700;color:#fecaca}
+  .nag .go{font-size:12px;color:#fff;background:var(--bad);padding:6px 12px;border-radius:999px;font-weight:700}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+  /* 学習カレンダー */
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:8px}
+  .cal .cell{aspect-ratio:1;border-radius:5px;background:#1b2740;font-size:9px;color:#5b6b85;
+    display:flex;align-items:center;justify-content:center}
+  .cal .cell.d1{background:#14532d}.cal .cell.d2{background:#16803c}
+  .cal .cell.d3{background:#22c55e;color:#062536;font-weight:700}
+  .cal .cell.today{outline:2px solid var(--accent);outline-offset:1px}
+  .cal-legend{display:flex;align-items:center;gap:6px;justify-content:flex-end;font-size:10px;color:var(--sub);margin-top:8px}
+  .cal-legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  /* バッジ */
+  .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:6px}
+  .bdg{text-align:center;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:9px 4px}
+  .bdg.locked{opacity:.32;filter:grayscale(1)}
+  .bdg .e{font-size:26px;line-height:1}
+  .bdg .n{font-size:10px;margin-top:3px;font-weight:700}
+  .bdg .d{font-size:9px;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -201,7 +233,24 @@
 <main>
   <!-- HOME -->
   <section class="panel on" id="p-home">
+    <div id="nag"></div>
     <div class="hero" id="hero"></div>
+    <div class="box">
+      <h2>📆 学習カレンダー</h2>
+      <div class="muted">やった日が緑に光る。<b>連続を切らさないのが合格への最短ルート。</b></div>
+      <div class="cal" id="cal"></div>
+      <div class="cal-legend">少 <i style="background:#1b2740"></i><i style="background:#14532d"></i><i style="background:#16803c"></i><i style="background:#22c55e"></i> 多</div>
+    </div>
+    <div class="box">
+      <h2>🏅 実績バッジ <span class="muted" id="badge-count" style="font-weight:400"></span></h2>
+      <div class="badges" id="badges"></div>
+    </div>
+    <div class="box" id="install-box">
+      <h2>📲 ホーム画面に置くと続く</h2>
+      <div class="muted" style="margin-bottom:6px">アプリのアイコンをスマホのホーム画面に追加すると、毎日目に入って習慣化しやすい＆オフラインでも開けます。</div>
+      <p style="font-size:13.5px;margin:6px 0"><b>iPhone：</b>Safariの共有ボタン<span class="pill">⬆️</span>→「ホーム画面に追加」</p>
+      <p style="font-size:13.5px;margin:6px 0"><b>Android：</b>Chromeのメニュー<span class="pill">⋮</span>→「ホーム画面に追加」</p>
+    </div>
     <div class="box" style="text-align:center">
       <div class="muted">あなたの進捗（この端末に保存）</div>
       <div class="row" style="margin-top:10px">
@@ -740,6 +789,9 @@ let st;
  if(st.bestStreak===undefined)st.bestStreak=0;
  if(st.lastDay===undefined)st.lastDay=null;
  if(st.todayCount===undefined)st.todayCount=0;
+ if(!st.dayLog)st.dayLog={};      // {日付:その日の問数} 学習カレンダー用
+ if(!st.badges)st.badges={};      // 獲得済みバッジ
+ if(st.totalAns===undefined)st.totalAns=0; // 累計問数
 })();
 function save(){lsSet(KEY,JSON.stringify(st))}
 const DAY_GOAL=10;
@@ -754,7 +806,44 @@ function bumpActivity(){
    if(st.streak>st.bestStreak)st.bestStreak=st.streak;
    st.lastDay=today;st.todayCount=0;
  }
- st.todayCount++;save();
+ st.todayCount++;st.totalAns++;
+ st.dayLog[today]=(st.dayLog[today]||0)+1;
+ const got=checkBadges();save();
+ if(got)setTimeout(()=>toast(got),300);
+}
+/* ===== 実績バッジ ===== */
+const BADGES=[
+ ['first','📚','はじめの一歩','1問やった',()=>st.totalAns>=1],
+ ['s3','🔥','3日連続','3日続けた',()=>st.bestStreak>=3],
+ ['s7','🔥','1週間連続','7日続けた',()=>st.bestStreak>=7],
+ ['s14','🔥','2週間連続','14日続けた',()=>st.bestStreak>=14],
+ ['s30','👑','1ヶ月連続','30日続けた',()=>st.bestStreak>=30],
+ ['q100','💯','100問達成','累計100問',()=>st.totalAns>=100],
+ ['q300','🎯','300問達成','累計300問',()=>st.totalAns>=300],
+ ['l1','⭐','鉄板コンプ','Lv1を全部覚えた',()=>CARDS.filter(c=>levelOf(c)===1).every(c=>st.learned[c.id])],
+ ['est75','🛡','合格圏とう達','合格予想75点超え',()=>estScore()>=75],
+ ['mock75','🏆','模試合格','模試で75点以上',()=>st.mockBestP!=null&&st.mockBestP>=75],
+];
+/* 新規獲得があれば最初の1個を返す（トースト用） */
+function checkBadges(){
+ let first=null;
+ BADGES.forEach(([id,ic,name,,cond])=>{
+   if(!st.badges[id]&&cond()){st.badges[id]=todayStr();if(!first)first=`${ic} バッジ獲得「${name}」`}
+ });
+ return first;
+}
+/* 画面下にふわっと出る通知 */
+function toast(msg){
+ const t=document.createElement('div');t.className='toast';t.textContent=msg;
+ document.body.appendChild(t);celebrate();
+ setTimeout(()=>t.classList.add('show'),10);
+ setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400)},2600);
+}
+/* 今まさに生きている連続日数（昨日まで継続中なら今日が勝負、途切れていれば0） */
+function liveStreak(){
+ const today=todayStr();const y=new Date();y.setDate(y.getDate()-1);
+ if(st.lastDay===today||st.lastDay===ymd(y))return st.streak;
+ return 0;
 }
 /* 合格予想点：覚えたカードのレベル別重み付け（目標値に整合） */
 function estScore(){
@@ -801,7 +890,7 @@ const LVL_META=[
  [3,'📗 Lv3 仕上げ','取りこぼし防止。ここまでで75点超え＝合格圏']
 ];
 function renderHome(){
- renderHero();
+ renderHero();renderNag();renderCalendar();renderBadges();
  document.getElementById('s-learned').textContent=Object.keys(st.learned).length+'/'+CARDS.length;
  document.getElementById('s-acc').textContent=st.quizDone?Math.round(st.quizOk/st.quizDone*100)+'%':'–';
  document.getElementById('s-mock').textContent=st.mockBestP!=null?st.mockBestP+'/125':'–';
@@ -823,9 +912,8 @@ function renderHome(){
 }
 function renderHero(){
  // 今日が継続中か（昨日まで連続＋今日もやった or まだ）
- const today=todayStr();const y=new Date();y.setDate(y.getDate()-1);
- let shownStreak=st.streak;
- if(st.lastDay!==today&&st.lastDay!==ymd(y))shownStreak=0; // 途切れている
+ const today=todayStr();
+ const shownStreak=liveStreak();
  const doneToday=(st.lastDay===today)?st.todayCount:0;
  const goalPct=Math.min(100,Math.round(doneToday/DAY_GOAL*100));
  const C=2*Math.PI*36, off=C*(1-goalPct/100);
@@ -856,6 +944,42 @@ function renderHero(){
       <div class="meter-now">${est>=75?'🎉 合格圏！':`合格まであと${75-est}点`}</div>
     </div>
   </div>`;
+}
+function renderNag(){
+ const today=todayStr();
+ const doneToday=(st.lastDay===today)?st.todayCount:0;
+ const el=document.getElementById('nag');
+ if(doneToday>=DAY_GOAL){el.innerHTML='';return}
+ const live=liveStreak();
+ const msg=doneToday===0
+   ?`今日はまだ <b>0問</b>！ ${live>0?'🔥'+live+'日連続が途切れるよ':'今日から始めよう'}`
+   :`今日 ${doneToday}/${DAY_GOAL}問。あと <b>${DAY_GOAL-doneToday}問</b> でノルマ達成！`;
+ el.innerHTML=`<div class="nag" onclick="go('quiz')"><div class="ic">${doneToday===0?'🚨':'💪'}</div>
+   <div class="tx">${msg}</div><div class="go">解く →</div></div>`;
+}
+function renderCalendar(){
+ const today=todayStr();const cells=[];
+ // 直近35日（5週間）＋未来側を埋めず、月曜始まり風に先頭の曜日合わせ
+ const start=new Date();start.setDate(start.getDate()-34);
+ // 先頭を日曜に合わせる
+ const pad=start.getDay();
+ for(let i=0;i<pad;i++)cells.push('<div class="cell" style="background:transparent"></div>');
+ for(let i=0;i<35;i++){
+   const d=new Date(start);d.setDate(start.getDate()+i);
+   const key=ymd(d);const n=st.dayLog[key]||0;
+   const cls=n>=DAY_GOAL?'d3':n>=5?'d2':n>=1?'d1':'';
+   const isToday=key===today?' today':'';
+   cells.push(`<div class="cell ${cls}${isToday}">${d.getDate()}</div>`);
+ }
+ document.getElementById('cal').innerHTML=cells.join('');
+}
+function renderBadges(){
+ const got=BADGES.filter(b=>st.badges[b[0]]).length;
+ document.getElementById('badge-count').textContent=`（${got}/${BADGES.length}）`;
+ document.getElementById('badges').innerHTML=BADGES.map(([id,ic,name,desc])=>{
+   const has=st.badges[id];
+   return `<div class="bdg ${has?'':'locked'}"><div class="e">${ic}</div><div class="n">${name}</div><div class="d">${has?'獲得！':desc}</div></div>`;
+ }).join('');
 }
 function goLevel(n){cardLvl=n;cardWeak=false;cardFilter='all';cardIdx=0;renderCardUI();showCard();go('cards')}
 function bar(n,v,max){
@@ -1232,6 +1356,11 @@ function drillNext(){
     <button class="act" onclick="startDrill()">▶ もう1周する</button>`;
    window.scrollTo(0,0);
  }
+}
+
+/* ===== PWA：ホーム画面アプリ化（HTTPSのときだけ有効。file://や非対応では黙ってスキップ） ===== */
+if('serviceWorker'in navigator&&location.protocol==='https:'){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 
 /* ===== init ===== */
