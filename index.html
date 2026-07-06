@@ -238,6 +238,30 @@
   .nag .tx{flex:1;font-size:14px;font-weight:700;color:#fecaca}
   .nag .go{font-size:12px;color:#fff;background:var(--bad);padding:6px 12px;border-radius:999px;font-weight:700}
   @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+  /* 直前モード */
+  .cram-hero{text-align:center;border-radius:22px;padding:22px 16px;margin:2px 0 14px;
+    background:linear-gradient(135deg,rgba(251,113,133,.18),rgba(168,85,247,.16)),rgba(16,22,38,.6);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(251,113,133,.4);
+    box-shadow:0 8px 30px rgba(251,113,133,.15)}
+  .cram-hero .dd{font-size:56px;font-weight:900;line-height:1;
+    background:linear-gradient(135deg,#fb7185,#d946ef);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .cram-hero .dl{font-size:14px;color:var(--sub);margin-top:2px}
+  .cram-hero .msg{font-size:14px;margin-top:10px;font-weight:700;color:#fecdd3}
+  .day{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:16px;
+    padding:14px 14px 14px 52px;margin:10px 0}
+  .day .dn{position:absolute;left:12px;top:12px;width:30px;height:30px;border-radius:50%;
+    background:var(--grad);color:#04111f;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .day.today{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset}
+  .day .dh{font-weight:800;font-size:14.5px;margin-bottom:6px}
+  .day .dh .td{font-size:11px;color:#3a2600;background:var(--warn);border-radius:999px;padding:1px 8px;margin-left:6px;font-weight:800}
+  .task{display:flex;align-items:center;gap:8px;font-size:13.5px;margin:7px 0}
+  .task .tb{margin-left:auto;flex-shrink:0;background:var(--card);border:1px solid var(--line);color:var(--accent);
+    border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer}
+  .sheet-sec{margin-top:14px}
+  .sheet-sec h3{font-size:13px;color:var(--accent);font-weight:800;margin:14px 0 6px;
+    border-bottom:1px solid var(--line);padding-bottom:5px}
+  .kv{font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .kv b{color:var(--warn)}
   /* 学習カレンダー */
   .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:8px}
   .cal .cell{aspect-ratio:1;border-radius:5px;background:#1b2740;font-size:9px;color:#5b6b85;
@@ -263,6 +287,11 @@
 </header>
 
 <main>
+  <!-- 直前モード -->
+  <section class="panel" id="p-cram">
+    <div id="cram-area"></div>
+  </section>
+
   <!-- HOME -->
   <section class="panel on" id="p-home">
     <div id="nag"></div>
@@ -500,6 +529,7 @@
 </main>
 
 <nav class="tabbar">
+  <button data-tab="cram" onclick="go('cram')"><span class="ico">🚨</span>直前</button>
   <button class="on" data-tab="home" onclick="go('home')"><span class="ico">🏠</span>ホーム</button>
   <button data-tab="cards" onclick="go('cards')"><span class="ico">📇</span>カード</button>
   <button data-tab="quiz" onclick="go('quiz')"><span class="ico">📝</span>クイズ</button>
@@ -827,6 +857,8 @@ let st;
 })();
 function save(){lsSet(KEY,JSON.stringify(st))}
 const DAY_GOAL=10;
+const EXAM_DATE='2026-07-10'; // 令和8年7月期 本試験日
+function daysLeft(){return Math.ceil((new Date(EXAM_DATE)-new Date())/86400000)}
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function ymd(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 /* 1問解く/1枚覚えるたびに呼ぶ：ストリークと今日の問数を更新 */
@@ -915,6 +947,71 @@ function go(tab){
  if(tab==='home')renderHome();
  if(tab==='quiz'&&!quizActive)nextQuiz();
  if(tab==='mock')renderMockHome();
+ if(tab==='cram')renderCram();
+}
+/* 直前モードからの誘導ジャンプ */
+function goWeak(){cardWeak=true;cardLvl=0;cardFilter='all';cardIdx=0;renderCardUI();showCard();go('cards')}
+function goDrill(){go('quiz');startDrill()}
+/* ===== 🚨 直前モード ===== */
+const CRAM_PLAN=[
+ ['今日やること（まず今日）',[
+   ['🗺 出題枠マップを1回ながめる（10分）','go(\'study\')'],
+   ['🔥 Lv1鉄板カードを1周（答えを見るだけでOK）','goLevel(1)']]],
+ ['明日',[
+   ['📋 本番順ドリルをA-1から2周','goDrill()'],
+   ['🧮 値→答え早見表を声に出して覚える','go(\'study\')']]],
+ ['あさって',[
+   ['📝 模試を1回→間違えたところだけ復習','go(\'mock\')'],
+   ['⭐ Lv2決め打ちカードを1周','goLevel(2)']]],
+ ['前日（新しいことはしない）',[
+   ['😰 苦手カードだけ回す','goWeak()'],
+   ['⚡ 寝る前に「直前10分まとめ」','go(\'study\')']]],
+];
+function renderCram(){
+ const d=daysLeft();
+ const todayIdx=d>=4?1:(d===3?2:(d===2?3:(d>=0&&d<=1?4:1))); // 今日がどのDayか
+ const msg=d>=3?'まだ間に合う。満点いらない、125点中75点(60%)で合格。計算を全部捨てても<b>語句＋決め打ちだけで75点</b>に届く設計。理解しない、「見たことある→答えこれ」を作るだけ。'
+   :d===2?'あと2日。ドリルと決め打ちシートをひたすら回す。新しい分野に手を広げない。'
+   :d===1?'前日。新しいことはやらない。決め打ち＋苦手だけ。しっかり寝る。'
+   :d===0?'当日！下の「一夜漬けシート」だけ見返して深呼吸。いける。'
+   :'コツコツ詰め込もう。';
+ const dl=d>0?`試験まで あと ${d} 日`:(d===0?'今日が本番！':'おつかれさま');
+ const plan=CRAM_PLAN.map((day,i)=>{
+   const n=i+1;const isToday=n===todayIdx;
+   const tasks=day[1].map(([t,fn])=>`<div class="task"><span>${t}</span><span class="tb" onclick="${fn}">やる →</span></div>`).join('');
+   return `<div class="day ${isToday?'today':''}"><div class="dn">${n}</div>
+     <div class="dh">${day[0]}${isToday?'<span class="td">今ここ</span>':''}</div>${tasks}</div>`;
+ }).join('');
+ // 一夜漬けシート：既存データを凝縮
+ const slots=SLOTS.slice(0,10).map(([no,body])=>`<div class="kv"><b>${no}</b> ${body.split('。')[0].split('(')[0]}</div>`).join('');
+ const cheats=CHEAT.filter(c=>c[1]).map(([f,h,name,,map])=>`<div class="kv"><b>${name}</b>：${map}</div>`).join('');
+ const kime=CARDS.filter(c=>c.k).map(c=>`<div class="kv">${c.k}</div>`).join('');
+ const tricks=TRICKS.map(([h,b])=>`<div class="kv"><b>${h}</b> ${b}</div>`).join('');
+ document.getElementById('cram-area').innerHTML=`
+  <div class="cram-hero">
+    <div class="dd">${d>=0?d:'—'}</div><div class="dl">${dl}</div>
+    <div class="msg">${msg}</div>
+  </div>
+  <div class="box">
+    <h2>📅 残り${d>0?d:0}日プラン</h2>
+    <div class="muted" style="margin-bottom:4px">上から順にやるだけ。1日2〜3時間の想定。できない日は「今日やること」だけでもOK。</div>
+    ${plan}
+  </div>
+  <div class="box">
+    <h2>🎯 これだけ作戦（0知識→合格）</h2>
+    <div class="kv">✅ <b>75点で合格</b>。20問中12問＋Bで拾えば届く。満点は狙わない。</div>
+    <div class="kv">✅ <b>計算は最悪ぜんぶ捨ててOK</b>。語句・決め打ちだけで合格点に乗る。</div>
+    <div class="kv">✅ 分からない問題は<b>「断定的な文＝あやしい」「一番長い選択肢」</b>など裏技で当てにいく。</div>
+    <div class="kv">✅ A-9〜11は<b>電源</b>、A-12は<b>ILS/レーダー</b>、A-17〜20は<b>測定</b>。位置で分野を予測。</div>
+  </div>
+  <div class="box">
+    <h2>🔥 一夜漬け最終兵器シート（当日これだけ）</h2>
+    <div class="muted">試験開始5分前はこれをスクロールするだけ。</div>
+    <div class="sheet-sec"><h3>🗺 どこに何が出る</h3>${slots}</div>
+    <div class="sheet-sec"><h3>🧮 値→答え（計算はこれだけ）</h3>${cheats}</div>
+    <div class="sheet-sec"><h3>🎯 決め打ちフレーズ</h3>${kime}</div>
+    <div class="sheet-sec"><h3>🃏 裏技（知らない問題用）</h3>${tricks}</div>
+  </div>`;
 }
 const LVL_META=[
  [1,'🔥 Lv1 鉄板','直近7年に3回以上出題された問題そのもの。ここだけで約45〜55点ぶん'],
@@ -928,8 +1025,8 @@ function renderHome(){
  document.getElementById('s-mock').textContent=st.mockBestP!=null?st.mockBestP+'/125':'–';
  const max=FREQ[0][1];
  document.getElementById('home-freq').innerHTML=FREQ.slice(0,6).map(([n,v])=>bar(n,v,max)).join('');
- const days=Math.ceil((new Date('2026-07-08')-new Date())/86400000);
- document.getElementById('countdown').textContent=days>0?`試験（令和8年7月期・7月上旬と想定）まで あと約${days}日`:'試験直前！「直前10分まとめ」を毎日見ること';
+ const days=daysLeft();
+ document.getElementById('countdown').textContent=days>0?`試験（令和8年7月10日）まで あと${days}日`:'試験当日！「直前10分まとめ」と決め打ちシートだけ見よう';
  document.getElementById('roadmap').innerHTML=LVL_META.map(([n,label,gain])=>{
    const cards=CARDS.filter(c=>levelOf(c)===n);
    const done=cards.filter(c=>st.learned[c.id]).length;
@@ -949,7 +1046,7 @@ function renderHero(){
  const doneToday=(st.lastDay===today)?st.todayCount:0;
  const goalPct=Math.min(100,Math.round(doneToday/DAY_GOAL*100));
  const C=2*Math.PI*36, off=C*(1-goalPct/100);
- const days=Math.ceil((new Date('2026-07-08')-new Date())/86400000);
+ const days=daysLeft();
  const est=estScore();
  const estPct=Math.round(est/125*100), passLeftPct=75/125*100;
  const mcol=est>=75?'linear-gradient(90deg,#34d399,#6ee7b7)':'linear-gradient(90deg,#22d3ee,#6366f1,#d946ef)';
@@ -1397,6 +1494,8 @@ if('serviceWorker'in navigator&&location.protocol==='https:'){
 
 /* ===== init ===== */
 renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();renderDrill();
+/* 試験まで7日以内なら、開いた瞬間に「直前モード」を表示 */
+if(daysLeft()<=7)go('cram');
 </script>
 </body>
 </html>
