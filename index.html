@@ -149,6 +149,9 @@
     padding:3px 11px;font-size:14px;box-shadow:0 3px 10px rgba(34,211,238,.3)}
   .drill-no.b{background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 3px 10px rgba(251,191,36,.3)}
   .drill-slot{font-size:12px;color:var(--sub)}
+  .qfig{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:12px;
+    padding:10px;margin:4px 0 12px;overflow-x:auto}
+  .qfig svg{display:block}
   /* mock */
   .mockbar{height:9px;background:var(--card2);border-radius:6px;overflow:hidden;margin:10px 0}
   .mockbar .fill{height:100%;background:var(--grad);transition:width .3s}
@@ -396,6 +399,11 @@
 
   <!-- QUIZ -->
   <section class="panel" id="p-quiz">
+    <div class="box" id="teacher-box">
+      <h2>🎓 講師予想問題（解説つき）</h2>
+      <div class="muted">研修講師が作った2026年7月版の予想問題を、本番の番号順に。1問ずつ<b>答え＋なぜその答えか</b>が出ます。</div>
+      <div id="teacher-area"></div>
+    </div>
     <div class="box" id="drill-box">
       <h2>📋 本番順ドリル（A-1から順番に）</h2>
       <div class="muted">本番そっくりの5択・穴埋めを、出題される番号順（A問題→B問題）に1問ずつ。答えると即・正解＆解説＆コツが出ます。○✕ではなく本物の問題形式です。</div>
@@ -1379,6 +1387,72 @@ function renderStudy(){
 /* ===== 本番順ドリル（番号順・本物の形式・即フィードバック） ===== */
 const DRILL_A=[['xa01','A-1'],['xa02','A-2'],['xa03','A-2'],['xa04','A-3'],['xa27','A-3'],['xa10','A-3'],['xa26','A-4'],['xa05','A-5'],['xa11','A-5'],['xa06','A-6'],['xa07','A-7'],['xa08','A-8'],['xa09','A-9'],['xa14','A-9'],['xa12','A-10'],['xa13','A-11'],['xa22','A-12'],['xa23','A-13'],['xa19','A-13'],['xa21','A-14'],['xa24','A-15'],['xa25','A-16'],['xa20','A-16'],['xa18','A-16'],['xa17','A-17'],['xa16','A-18'],['xa15','A-19']];
 const DRILL_B=[['xb04','B-1'],['xb02','B-2'],['xb01','B-3'],['xb03','B-4'],['xb06','B-5'],['xb05','B-2']];
+/* ===== 🎓 講師予想問題（2026年7月版 A問題・決め打ち解説つき） ===== */
+const FIG_OFDM='<div style="overflow-x:auto"><svg viewBox="0 0 560 78" style="min-width:520px;height:78px"><g font-size="11" fill="var(--ink)" text-anchor="middle">'
+ +'<rect x="8" y="24" width="104" height="32" rx="6" fill="none" stroke="var(--accent)"/><text x="60" y="44">直並列変換</text>'
+ +'<rect x="128" y="24" width="70" height="32" rx="6" fill="none" stroke="var(--accent)"/><text x="163" y="44">IFFT</text>'
+ +'<line x1="112" y1="40" x2="128" y2="40" stroke="var(--sub)"/><text x="280" y="16" fill="var(--sub)">伝送路</text>'
+ +'<line x1="198" y1="40" x2="362" y2="40" stroke="var(--sub)" stroke-dasharray="4 3"/>'
+ +'<rect x="362" y="24" width="70" height="32" rx="6" fill="none" stroke="var(--warn)"/><text x="397" y="44">FFT</text>'
+ +'<rect x="448" y="24" width="104" height="32" rx="6" fill="none" stroke="var(--warn)"/><text x="500" y="44">並直列変換</text>'
+ +'<line x1="432" y1="40" x2="448" y2="40" stroke="var(--sub)"/>'
+ +'<text x="120" y="72" fill="var(--accent)">送信部</text><text x="470" y="72" fill="var(--warn)">受信部</text></g></svg></div>';
+const TEACHER=[
+{id:'t7a01',no:'A-1',q:'地上系デジタル放送(ISDB-T)の画像符号化について。画像情報圧縮は、動き補償予測符号化・離散コサイン変換などを組み合わせた［B］方式である。符号は統計的に発生頻度が［C］符号ほど短いビット列で表す［A］で冗長性を除く。［A/B/C］の正しい組合せは？',
+ c:['マルチキャリア方式／JPEG／高い','マルチキャリア方式／JPEG／低い','マルチキャリア方式／MPEG-2／高い','可変長符号化方式／MPEG-2／高い','可変長符号化方式／MPEG-2／低い'],a:3,
+ e:'地デジの画像圧縮はMPEG-2。発生頻度が「高い」符号ほど短いビットを割り当てる（＝可変長符号化／ハフマン）。',k:'地デジ画像＝MPEG-2、圧縮は可変長（頻度高い→短いビット）'},
+{id:'t7a02',no:'A-2',q:'A3E(DSB)変調度を m×100〔％〕とする。(1)AMの全送信電力 PAM＝PC(1＋［A］)。(2)J3E(SSB)は片側波帯だけなので PSSB＝PC×［B］。(3)m＝1のとき PSSB は PAM の［C］倍。正しい組合せは？',
+ c:['m²/4 ／ m²/8 ／ 1/10','m²/4 ／ m²/4 ／ 1/6','m²/2 ／ m²/4 ／ 1/6','m²/2 ／ m²/2 ／ 2/9','m² ／ m²/2 ／ 1/4'],a:2,
+ e:'AM全電力＝PC(1＋m²/2)。片側波帯電力＝PC・m²/4。m＝1で PSSB＝PC/4、PAM＝1.5PC → 比は 1/6。',k:'AMは「1＋m²/2」倍、片側波帯は「m²/4」。m=1でSSB/AM=1/6'},
+{id:'t7a03',no:'A-3',q:'OFDM方式の変復調システムの原理構成。送信部は［A］→［B］の順、受信部は［C］→［D］の順に処理する。正しい組合せは？',fig:FIG_OFDM,
+ c:['並直列変換／離散フーリエ変換／逆離散フーリエ変換／直並列変換','並直列変換／逆離散フーリエ変換／離散フーリエ変換／直並列変換','直並列変換／離散フーリエ変換／逆離散フーリエ変換／並直列変換','直並列変換／逆離散フーリエ変換／離散フーリエ変換／並直列変換','直並列変換／逆離散フーリエ変換／離散フーリエ変換／直並列変換'],a:3,
+ e:'送信は 直並列→IFFT（逆離散フーリエ変換）、受信は FFT（離散フーリエ変換）→並直列。',k:'OFDM＝送信IFFT・受信FFT、入口で直並列・出口で並直列'},
+{id:'t7a04',no:'A-4',q:'高周波増幅器の雑音指数について、誤っているものはどれか。',
+ c:['有能電力とは、回路から取り出せる最大の電力をいう','有能電力利得G(真数)は SO/Si で表される','雑音指数は (Si/Ni)/(SO/NO) で表される','等価雑音帯域幅B等を用いると、雑音指数は GkTB/NO で表される','内部雑音が生じると SO/NO は Si/Ni より小さくなる'],a:3,
+ e:'雑音指数の定義は NF＝(Si/Ni)/(SO/NO)＝NO/(G・kTB)。「GkTB/NO」は逆で誤り。',k:'NF＝(入力S/N)÷(出力S/N)、必ず1以上。分母はG・kTB'},
+{id:'t7a05',no:'A-5',q:'受信機の入力端に入る信号 e の電力が −73〔dBm〕のときの e の電圧の実効値に最も近いものは？ 入力インピーダンス50〔Ω〕、1〔mW〕＝0〔dBm〕、log₁₀2＝0.3。',
+ c:['0.5〔μV〕','2〔μV〕','3〔μV〕','5〔μV〕','50〔μV〕'],a:4,
+ e:'−73dBm＝5×10⁻¹¹W（−70dBm=10⁻¹⁰W、−3dBで半分）。電圧＝√(電力×抵抗)＝√(5×10⁻¹¹×50)＝√(2.5×10⁻⁹)＝5×10⁻⁵V＝50μV。',k:'−73dBm・50Ω→50μV。dBm→電力→√(電力×抵抗)'},
+{id:'t7a06',no:'A-6',q:'受信機の雑音制限感度について。(1)［A］を得るために、どの程度まで［B］電波を受信できるかを表す。(2)総合利得が等しい2受信機では、出力信号中の内部雑音が［C］ほうが雑音制限感度が良い。正しい組合せは？',
+ c:['利得を最大にした状態で規定の信号出力／弱い／小さい','利得を最大にした状態で規定の信号出力／強い／大きい','利得を最大にした状態で規定の信号出力／弱い／大きい','規定の信号対雑音比(S/N)の下で規定の信号出力／強い／大きい','規定の信号対雑音比(S/N)の下で規定の信号出力／弱い／小さい'],a:4,
+ e:'感度＝規定のS/Nを満たしつつ、どれだけ弱い電波を受けられるか。内部雑音が小さいほど高感度。',k:'感度＝弱い電波を規定S/Nで受ける力。雑音小さい＝感度良い'},
+{id:'t7a07',no:'A-7',q:'スーパヘテロダイン受信機の混信妨害について、誤っているものはどれか。',
+ c:['影像周波数による混信は、高周波増幅器の選択度を上げると軽減できる','近接周波数による混信は、妨害波の周波数が受信周波数に近接しているとき生じる','近接周波数混信の軽減には、中間周波増幅器の選択度向上が有効である','相互変調・混変調は、高周波増幅器などが入出力特性の非直線範囲で動作するとき生じる','相互変調・混変調による混信は、受信機の入力レベルを上げることで軽減できる'],a:4,
+ e:'ひずみ（非直線）で起こる相互変調・混変調は、入力レベルを「下げて」非直線動作を避けると軽減。上げると悪化するので誤り。',k:'ひずみ系の混信は「入力を下げる」で軽減'},
+{id:'t7a08',no:'A-8',q:'FM受信機のノイズスケルチ方式・キャリアスケルチ方式について、誤っているものはどれか。',
+ c:['キャリアスケルチ方式は、都市雑音の影響でスケルチ動作点を適正に保つのが難しい','キャリアスケルチ方式は、弱電界のスケルチに適し、音声信号による誤動作が少ない','ノイズスケルチ方式は、音声帯域外の雑音を整流して得た電圧を制御信号に用いる','ノイズスケルチ方式は、動作点を弱電界に設定でき、通話可能限界点にほぼ一致させられる','ノイズスケルチ方式は、音声信号の過変調による誤動作が生じやすい'],a:1,
+ e:'キャリアスケルチは搬送波レベルで開閉するので、弱電界や雑音に弱い。「弱電界に適し誤動作が少ない」は誤り。弱電界に強いのはノイズスケルチ。',k:'弱電界＝ノイズスケルチが得意（キャリアスケルチは苦手）'},
+{id:'t7a09',no:'A-9',q:'直列制御形定電圧回路の電流制限形保護回路について。保護回路として動作するトランジスタは［A］。負荷電流ILが過大になり Rs 両端電圧が規定を超えると、［A］のコレクタ電流が［B］し、Tr1のベース電流が［C］して電流を制限する。正しい組合せは？',
+ c:['Tr2 ／ 増加 ／ 減少','Tr2 ／ 減少 ／ 減少','Tr2 ／ 減少 ／ 増加','Tr3 ／ 減少 ／ 増加','Tr3 ／ 増加 ／ 減少'],a:0,
+ e:'過電流→Rs電圧上昇→保護Tr2がON（コレクタ電流増加）→Tr1のベース電流を奪う（減少）→出力電流を絞る。',k:'保護Tr＝Tr2。過電流でTr2が増→Tr1を絞る'},
+{id:'t7a10',no:'A-10',q:'移動通信端末に使われるリチウムイオン二次電池について。負極に［A］、正極にコバルト酸リチウムを用いる。ニッケルカドミウム蓄電池と異なり［B］がなく継ぎ足し充電ができる。充電完了状態で高温保存すると容量劣化が［C］なる。正しい組合せは？',
+ c:['金属リチウム ／ サイクル劣化 ／ 大きく','金属リチウム ／ メモリ効果 ／ 少なく','炭素質材料 ／ サイクル劣化 ／ 少なく','炭素質材料 ／ メモリ効果 ／ 少なく','炭素質材料 ／ メモリ効果 ／ 大きく'],a:4,
+ e:'負極＝炭素（黒鉛）、メモリ効果なし、高温保存で劣化が大きい。',k:'リチウムイオン＝負極炭素・メモリ効果なし・高温に弱い'},
+{id:'t7a11',no:'A-11',q:'レーダー方程式で最大探知距離 Rmax を2倍にする方法について、誤っているものはどれか。ただし送受共用でアンテナ利得は送受同じとする。',
+ c:['最小受信電力を 1/16 の受信機を用いる','アンテナの利得を4倍にする','物標の有効反射断面積を16倍にする','送信電力を4倍にし、かつアンテナの利得を4倍にする','送信電力を16倍にする'],a:3,
+ e:'Rmaxは4乗根で効く。2倍にはカッコ内を16倍にすればよい。送信×4かつ利得×4だと、電力4倍・利得²=16倍で計64倍→Rmaxは約2.8倍になり行き過ぎ（誤り）。',k:'Rmaxは4乗根。中身16倍で2倍。利得はG²で効く'},
+{id:'t7a12',no:'A-12',q:'アナログ移動通信方式と比べたデジタル移動通信方式の特徴について。(1)雑音や干渉に強く、場合により［A］で誤りの訂正ができる。(2)一つの伝送路で複数の情報を時間的に多重［B］。(3)秘匿や認証などのセキュリティ確保が［C］となる。正しい組合せは？',
+ c:['送信側 ／ できる ／ 困難','送信側 ／ できる ／ 容易','送信側 ／ できない ／ 容易','受信側 ／ できる ／ 容易','受信側 ／ できない ／ 容易'],a:3,
+ e:'誤り訂正は受信側、時分割多重ができ、暗号化でセキュリティ確保が容易。',k:'デジタル＝受信側で誤り訂正・多重できる・秘匿容易'},
+{id:'t7a13',no:'A-13',q:'衛星通信回線の総合の搬送波電力対雑音電力比 C/N（真数）を表す式として正しいものは？ 雑音はアップリンク熱雑音・ダウンリンク熱雑音・システム間干渉・システム内干渉のみとし、各比を C/N₁〜C/N₄ とする。',
+ c:['1/(C/N₁)＋1/(C/N₂)＋1/(C/N₃)＋1/(C/N₄)','4/{1/(C/N₁)＋…＋1/(C/N₄)}','1/{1/(C/N₁)＋1/(C/N₂)＋1/(C/N₃)＋1/(C/N₄)}','(C/N₁＋C/N₂＋C/N₃＋C/N₄)/4','C/N₁＋C/N₂＋C/N₃＋C/N₄'],a:2,
+ e:'雑音は足し合わさるので、総合C/Nの逆数＝各C/Nの逆数の和。よって総合C/N＝「逆数の和の逆数」（抵抗の並列合成と同じ形）。',k:'総合C/Nは「逆数の和の逆数」（並列合成の形）'},
+{id:'t7a14',no:'A-14',q:'GPSを利用した測位の誤差要因・補正について、誤っているものはどれか。',
+ c:['対流圏遅延は周波数に依存しないため、2周波の測定では軽減できない','電離層遅延は周波数の2乗に反比例するため、2周波以上の測定で軽減できる','マルチパスの軽減には、仰角の低いGPS衛星を使わないことが有効である','衛星クロック誤差や軌道誤差は、航法メッセージの情報で補正できる','既知点でGPS誤差を測定するDGPSにより、マルチパスによる測位誤差も良好に補正できる'],a:4,
+ e:'DGPSは電離層遅延や衛星クロックなど「共通の誤差」を消せるが、受信機ごとに違うマルチパスは補正できない（誤り）。',k:'DGPS＝共通誤差を消す。マルチパスは消せない'},
+{id:'t7a16',no:'A-16',q:'あるパルス信号をオシロスコープに表示したところ、パルス幅（振幅50％のレベル間の幅）が水平方向で約5目盛だった。水平軸の1目盛あたりの掃引時間が5〔μs〕のとき、パルス幅の測定値に最も近いものは？',
+ c:['20〔μs〕','25〔μs〕','40〔μs〕','50〔μs〕','60〔μs〕'],a:1,
+ e:'パルス幅＝（50％レベル間の目盛数）×（1目盛の時間）＝5目盛×5μs＝25μs。',k:'パルス幅＝目盛数×（μs/div）。50％の高さで数える'},
+{id:'t7a17',no:'A-17',q:'サンプリングオシロスコープの原理について。(1)入力信号の周期より少し［A］周期のサンプリングパルスで標本化すると、周期を長くしたような波形が得られる。(2)入力繰返し fi、サンプリング fs のとき観測信号の周波数は［B］で表され、高い周波数を低い周波数に変換できる。(3)このサンプリングは、周期性のない信号には［C］。正しい組合せは？',
+ c:['短い ／ fs/fi ／ にも適用できる','短い ／ fi−fs ／ には適用できない','長い ／ fi−fs ／ には適用できない','長い ／ fs/fi ／ には適用できない','長い ／ fi−fs ／ にも適用できる'],a:2,
+ e:'サンプリング周期を入力より少し「長く」し、観測周波数＝fi−fs。繰返し信号専用で、周期性のない信号には使えない。',k:'等価時間サンプリング＝繰返し信号のみ。周期を少し長くしてゆっくり再現'},
+{id:'t7a19',no:'A-19',q:'スーパヘテロダイン方式スペクトルアナライザについて。(1)ディスプレイの垂直軸に入力振幅、水平軸に［A］を表示してスペクトルを直視する。(2)掃引信号発生器の「のこぎり波信号」で電圧同調形局部発振器を［B］した出力と入力を混合する。(3)周波数分解能は［D］の帯域幅でほぼ決まる。［A/B/D］に近い正しい組合せは？',
+ c:['位相 ／ 周波数変調 ／ ビデオフィルタ','位相 ／ 振幅変調 ／ IFフィルタ','周波数 ／ 周波数変調 ／ IFフィルタ','周波数 ／ 振幅変調 ／ IFフィルタ','周波数 ／ 周波数変調 ／ ビデオフィルタ'],a:2,
+ e:'スペアナは横軸が周波数。のこぎり波で局発を「周波数変調（掃引）」し、分解能はIFフィルタ（分解能帯域幅RBW）で決まる。',k:'スペアナ＝横軸周波数・局発を掃引・分解能はIF帯域幅'},
+{id:'t7a20',no:'A-20',q:'400〔MHz〕帯F3E送信設備（空中線電力50W）のスプリアス発射・不要発射について。許容値は「平均電力より70dB低い値」かつ「1mW以下」の厳しい方。(1)帯域外領域のスプリアス発射100〔μW〕を測定→許容値を［A］。(2)不要発射1〔μW〕を測定→許容値［B］。(3)スプリアス領域の不要発射強度は、参照帯域幅の範囲で電力を積分した値に［C］。正しい組合せは？',
+ c:['以下である ／ 以下である ／ 含まれる','以下である ／ 以下である ／ 含まれない','以下である ／ を超えている ／ 含まれる','を超えている ／ を超えている ／ 含まれる','を超えている ／ 以下である ／ 含まれる'],a:4,
+ e:'50Wの70dB低い値＝50×10⁻⁷＝5μW（1mWより小さいのでこちらが許容値）。測定100μW＞5μW→「超えている」。不要発射1μWは許容内→「以下」。強度は参照帯域幅で積分した値に「含まれる」。',k:'許容値は「−70dB」と「1mW」の厳しい方。100μW>5μWで超過'},
+];
 let drill=null;
 function buildDrillSeq(){
  const seq=[];
@@ -1387,7 +1461,7 @@ function buildDrillSeq(){
  return seq;
 }
 function renderDrill(){
- if(drill){drillRender();return}
+ if(drill&&drill.mode==='exam'){drillRender();return}
  const seq=buildDrillSeq();
  const nA=seq.filter(s=>s.type==='A').length, nB=seq.filter(s=>s.type==='B').length;
  document.getElementById('drill-area').innerHTML=`
@@ -1395,8 +1469,21 @@ function renderDrill(){
   <p class="muted" style="margin:0 0 10px">採点なし・1問ずつ答え合わせ。分からなければ答えを見て覚えるだけでOK。</p>
   <button class="act" onclick="startDrill()">▶ 最初から始める（A-1へ）</button>`;
 }
-function startDrill(){drill={seq:buildDrillSeq(),idx:0,tf:[]};drillRender()}
-function quitDrill(){drill=null;renderDrill();window.scrollTo(0,0)}
+function renderTeacher(){
+ document.getElementById('teacher-area').innerHTML=`
+  <p style="font-size:14px;margin:10px 0 4px">研修講師の予想問題を、1問ずつ<b>答え＋なぜその答えか（決め打ち解説）</b>つきで解いていきます。</p>
+  <p class="muted" style="margin:0 0 10px">2026年7月版・A問題 ${TEACHER.length}問（図つき／順次追加中）。</p>
+  <button class="act" onclick="startTeacher()">▶ 講師予想を解く</button>`;
+}
+function buildTeacherSeq(){return TEACHER.map(q=>({type:'A',q,slot:q.no}))}
+function startDrill(mode){
+ mode=mode||'exam';
+ const seq=mode==='teacher'?buildTeacherSeq():buildDrillSeq();
+ drill={seq,idx:0,tf:[],mode,area:mode==='teacher'?'teacher-area':'drill-area'};
+ drillRender();
+}
+function startTeacher(){startDrill('teacher')}
+function quitDrill(){const m=drill?drill.mode:'exam';drill=null;m==='teacher'?renderTeacher():renderDrill();window.scrollTo(0,0)}
 function drillBar(){const t=drill.seq.length;return `<div class="mockbar"><div class="fill" style="width:${drill.idx/t*100}%"></div></div>`}
 function drillHead(){
  const cur=drill.seq[drill.idx];const isB=cur.type==='B';
@@ -1411,8 +1498,8 @@ function drillRenderA(){
  drill.answered=false;
  const q=drill.seq[drill.idx].q;
  const opts=q.c.map((o,i)=>`<button class="opt" onclick="drillAnswerA(${i})">${i+1}　${o}</button>`).join('');
- document.getElementById('drill-area').innerHTML=`${drillHead()}
-   <div class="q" style="margin:6px 0 12px">${q.q}</div>${opts}<div id="dfb"></div>`;
+ document.getElementById(drill.area).innerHTML=`${drillHead()}
+   <div class="q" style="margin:6px 0 10px">${q.q}</div>${q.fig?`<div class="qfig">${q.fig}</div>`:''}${opts}<div id="dfb"></div>`;
  window.scrollTo(0,0);
 }
 function drillAnswerA(i){
@@ -1442,7 +1529,7 @@ function drillRenderB(){
    body+=q.items.map((it,bi)=>`<div class="bitem"><span class="bblank">${KANA[bi]}</span>　${it.text}
      <div class="tfbtns"><button class="opt" id="dtf${bi}-0" onclick="drillTF(${bi},0)">1　正しい</button><button class="opt" id="dtf${bi}-1" onclick="drillTF(${bi},1)">2　誤り</button></div></div>`).join('');
  }
- document.getElementById('drill-area').innerHTML=`${drillHead()}
+ document.getElementById(drill.area).innerHTML=`${drillHead()}
    <div style="font-weight:700;color:var(--warn);font-size:13px;margin:4px 0">〔${q.title}〕</div>
    ${body}<button class="act" style="margin-top:12px" id="dsub" onclick="drillSubmitB()">答え合わせ</button><div id="dfb"></div>`;
  window.scrollTo(0,0);
@@ -1478,11 +1565,11 @@ function drillNext(){
  drill.idx++;
  if(drill.idx<drill.seq.length){drillRender()}
  else{
-   drill=null;
-   document.getElementById('drill-area').innerHTML=`
-    <div class="verdict pass">🎉 1周おつかれさま！<br>本番の流れはこれでバッチリ</div>
-    <p class="muted">同じ問題でも、2周目は答えを隠して解けるか試そう。仕上げは「模試」タブで125点形式に挑戦。</p>
-    <button class="act" onclick="startDrill()">▶ もう1周する</button>`;
+   const area=drill.area, mode=drill.mode; drill=null;
+   document.getElementById(area).innerHTML=`
+    <div class="verdict pass">🎉 1周おつかれさま！<br>${mode==='teacher'?'講師予想、ぜんぶ見た！':'本番の流れはこれでバッチリ'}</div>
+    <p class="muted">${mode==='teacher'?'2周目は答えを隠して。決め打ち解説を思い出せるかチェック。':'同じ問題でも、2周目は答えを隠して解けるか試そう。仕上げは「模試」タブで125点形式に挑戦。'}</p>
+    <button class="act" onclick="${mode==='teacher'?'startTeacher()':'startDrill()'}">▶ もう1周する</button>`;
    window.scrollTo(0,0);
  }
 }
@@ -1493,7 +1580,7 @@ if('serviceWorker'in navigator&&location.protocol==='https:'){
 }
 
 /* ===== init ===== */
-renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();renderDrill();
+renderCardUI();showCard();renderQuizUI();renderStudy();renderHome();renderDrill();renderTeacher();
 /* 試験まで7日以内なら、開いた瞬間に「直前モード」を表示 */
 if(daysLeft()<=7)go('cram');
 </script>
