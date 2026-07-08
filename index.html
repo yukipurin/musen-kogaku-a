@@ -1453,6 +1453,35 @@ const TEACHER=[
  c:['以下である ／ 以下である ／ 含まれる','以下である ／ 以下である ／ 含まれない','以下である ／ を超えている ／ 含まれる','を超えている ／ を超えている ／ 含まれる','を超えている ／ 以下である ／ 含まれる'],a:4,
  e:'50Wの70dB低い値＝50×10⁻⁷＝5μW（1mWより小さいのでこちらが許容値）。測定100μW＞5μW→「超えている」。不要発射1μWは許容内→「以下」。強度は参照帯域幅で積分した値に「含まれる」。',k:'許容値は「−70dB」と「1mW」の厳しい方。100μW>5μWで超過'},
 ];
+/* 5月版（答えは全問こちらで計算し、模擬の答えと一致を確認済み） */
+const TEACHER_M5=[
+{id:'t5a01',no:'A-1',q:'AM(A3E)送信機で搬送波を単一正弦波で振幅変調したとき、送信機出力の被変調波の平均電力が124〔W〕、変調度は50〔％〕であった。無変調のときの搬送波電力に最も近いものは？',c:['100〔W〕','105〔W〕','110〔W〕','115〔W〕','120〔W〕'],a:2,e:'AMの全電力＝PC(1＋m²/2)。m=0.5→1＋0.125＝1.125。PC＝124÷1.125≒110W。',k:'AM全電力＝PC×(1＋m²/2)。m=50%なら全電力÷1.125＝搬送波'},
+{id:'t5a06',no:'A-6',q:'送信設備の終段部で、1〔W〕の入力電力を加え、電力増幅器及びアンテナ整合器を通した出力が40〔W〕のとき、電力増幅器の利得は？ アンテナ整合器の挿入損失2〔dB〕、log₁₀2＝0.3。',c:['12〔dB〕','14〔dB〕','16〔dB〕','18〔dB〕','20〔dB〕'],a:3,e:'全体の利得＝10log(40/1)＝10(0.6＋1)＝16dB。整合器で2dB損するので増幅器は16＋2＝18dB。',k:'dB利得＝10log(倍率)。損失分は増幅器側に足し戻す'},
+{id:'t5a10',no:'A-10',q:'電源に用いるコンバータ及びインバータについて、誤っているものはどれか。',c:['DC-DCコンバータには、入出力間を絶縁できる絶縁型と、絶縁できない非絶縁型がある','DC-DCコンバータのチョッパ方式は、原理的に出力電圧を昇圧することができない','インバータのPWM方式は、パルス幅を変え等価的に正弦波出力を得るもので、キャリア周波数が高いほど波形が正弦波に近づく','インバータは、出力の交流電圧の周波数及び位相を制御できる','インバータの電力制御素子には、主にIGBTやMOS-FETなどのトランジスタやサイリスタが用いられる'],a:1,e:'チョッパ方式には昇圧形もあるので「昇圧できない」は誤り。DC-DCは降圧も昇圧も可能。',k:'DC-DCチョッパは昇圧もできる（定番のひっかけ）'},
+{id:'t5a11',no:'A-11',q:'鉛蓄電池の充電について、誤っているものはどれか。',c:['定電流・定電圧充電は、初期・中期は定電圧で、終期には定電流で充電する','電極の負担を軽くするには、充電初期に大きな電流を流し過ぎないようにする','定電圧充電は、電圧を充電終止電圧に設定し一定に保って充電する','定電流充電は、常に一定の電流で充電する','定電圧充電では、電流は充電終期に近づくほど小さくなる'],a:0,e:'定電流・定電圧充電は「初期・中期＝定電流、終期＝定電圧」が正しい。順序が逆なので誤り。',k:'充電は「先に定電流→終わりに定電圧」。逆に書いてあれば誤り'},
+{id:'t5a12',no:'A-12',q:'パルスレーダーの距離分解能に最も近いものは？ 送信パルス幅0.6〔μs〕、同方位の2物標を分離できる最小距離差とする。',c:['45〔m〕','90〔m〕','120〔m〕','160〔m〕','180〔m〕'],a:1,e:'距離＝150×パルス幅〔μs〕＝150×0.6＝90m。',k:'レーダの距離は「150×μs」。1μsで150m'},
+{id:'t5a16',no:'A-16',q:'伝送速度5〔Mbps〕のデジタル回線でビット誤り率が1×10⁻⁸だった。平均的にt秒ごとに1ビット誤るとき、tに最も近いものは？',c:['20〔s〕','10〔s〕','8〔s〕','6〔s〕','5〔s〕'],a:0,e:'t＝1÷(伝送速度×誤り率)＝1÷(5×10⁶×10⁻⁸)＝1÷0.05＝20秒。',k:'誤り1個の間隔＝1÷(速度×誤り率)'},
+{id:'t5a17',no:'A-17',q:'波高値Em・周期Tが等しい「のこぎり波」と「正弦波」がある。真の実効値を指示する電圧計でのこぎり波を測ると1〔V〕だった。同じ電圧計で正弦波を測ったときの指示値は？ のこぎり波の実効値はEm/√3。',c:['√(1/2)〔V〕','√(2/3)〔V〕','√(3/2)〔V〕','√2〔V〕','√3〔V〕'],a:2,e:'のこぎり実効値＝Em/√3＝1→Em＝√3。正弦波実効値＝Em/√2＝√3/√2＝√(3/2)。',k:'のこぎり＝Em/√3、正弦＝Em/√2。答えは√(3/2)倍'},
+];
+/* 6月版（直前）：答えは全問こちらで計算し、模擬の答えと一致を確認済み */
+const TEACHER_M6=[
+{id:'t6a02',no:'A-2',q:'AM(A3E)波を表す式として正しいものは？ 振幅の最大値A〔V〕に対する最小値B〔V〕の比(B/A)を1/4、搬送波振幅E・角周波数ω、変調信号は単一正弦波で角周波数p。',c:['E(1＋0.25cos ωt)cos pt','E(1＋0.25cos pt)cos ωt','E(1＋0.6cos pt)cos ωt','E(1＋0.6cos ωt)cos pt','E(1＋0.6cos ωt)cos ωt'],a:2,e:'変調度m＝(A−B)/(A+B)。B/A=1/4→A=4,B=1→m=3/5=0.6。式はE(1＋0.6cos pt)cos ωt（変調pが中・搬送波ωが外）。',k:'m=(A−B)/(A+B)。B/A=1/4でm=0.6。中はcos pt・外はcos ωt'},
+{id:'t6a05',no:'A-5',q:'OFDMで原理的に伝送できる最大の伝送速度に最も近いものは？ サブキャリアの変調方式64QAM、サブキャリア40個、シンボル期間長5〔μs〕。冗長信号は無し。',c:['18〔Mbps〕','28〔Mbps〕','38〔Mbps〕','48〔Mbps〕','58〔Mbps〕'],a:3,e:'64QAM＝1シンボル6ビット。1サブキャリアの速度＝6÷5μs＝1.2Mbps。×40本＝48Mbps。',k:'64QAM=6bit。速度＝(bit÷シンボル長)×サブキャリア数'},
+{id:'t6a07',no:'A-7',q:'抵抗100〔Ω〕から発生する熱雑音電圧の実効値に最も近いものは？ 等価雑音帯域幅2.4〔MHz〕、周囲温度300〔K〕、ボルツマン定数1.38×10⁻²³〔J/K〕。',c:['1×10⁻⁶〔V〕','2×10⁻⁶〔V〕','3×10⁻⁶〔V〕','4×10⁻⁶〔V〕','5×10⁻⁶〔V〕'],a:1,e:'雑音電圧＝√(4kTBR)＝√(4×1.38×10⁻²³×300×2.4×10⁶×100)≒√(4×10⁻¹²)＝2×10⁻⁶V。',k:'熱雑音＝√(4kTBR)。100Ω≒2μV、200Ω≒3μV、300Ω≒4μV'},
+{id:'t6a08',no:'A-8',q:'無線通信回線で送信機の送信電力(平均電力)Pに最も近いものは？ C/N＝60〔dB〕、送受アンテナ絶対利得各33〔dBi〕、送受給電線損失各3〔dB〕、伝搬損失137〔dB〕、受信機の雑音電力入力換算値−100〔dBm〕、log₁₀2＝0.3。',c:['1〔W〕','2〔W〕','3〔W〕','4〔W〕','5〔W〕'],a:4,e:'受信搬送波C＝C/N＋雑音＝60＋(−100)＝−40dBm。P＝C＋伝搬137＋給電線3＋3−利得33−33＝37dBm。37dBm＝1W×約5倍＝5W。',k:'dBで足し引き→最後にdBm→W。37dBm≒5W'},
+{id:'t6a09',no:'A-9',q:'スーパヘテロダイン受信機の受信周波数が8,400〔kHz〕のときの影像周波数は？ 中間周波数455〔kHz〕、局部発振器の発振周波数は受信周波数より低いものとする。',c:['7,490〔kHz〕','7,945〔kHz〕','8,400〔kHz〕','8,855〔kHz〕','9,310〔kHz〕'],a:0,e:'影像＝受信周波数±2×中間周波数。局発が低い→受信−2×455＝8400−910＝7490kHz。',k:'影像＝受信±2×IF。局発が低い→引く、高い→足す'},
+{id:'t6a12',no:'A-12',q:'最大探知距離Rmaxが10〔km〕のパルスレーダーの受信機の最小受信電力を0.25倍にしたときのRmaxに最も近いものは？ レーダー方程式による。',c:['20〔km〕','14〔km〕','7〔km〕','5〔km〕','2.5〔km〕'],a:1,e:'Rmaxは最小受信電力の4乗根に反比例。0.25倍→(1/0.25)^¼＝4^¼＝√2≒1.41倍→10×1.41＝14km。',k:'Rmaxは4乗根。感度4倍(1/0.25)で距離√2倍'},
+{id:'t6a16',no:'A-16',q:'最高周波数4〔kHz〕の音声信号を、伝送速度64〔kbps〕のPCM方式で伝送するとき、許容される符号化ビット数の最大値は？ 標本化は標本化定理に基づき、同期符号等は無し。',c:['8〔bit〕','16〔bit〕','32〔bit〕','64〔bit〕','128〔bit〕'],a:0,e:'標本化周波数fs≧2×4k＝8kHz。ビット数＝伝送速度÷fs＝64000÷8000＝8bit。',k:'ビット数＝伝送速度÷標本化周波数（fs＝最高周波数の2倍）'},
+{id:'t6a20',no:'A-20',q:'電力密度5×10⁻¹⁵〔W/Hz〕の雑音を、周波数帯域幅200〔kHz〕の理想矩形フィルタを持つスペクトルアナライザで測定したときの電力は？ 雑音は帯域内一様、フィルタ損失なし、1〔mW〕＝0〔dBm〕。',c:['−20〔dBm〕','−30〔dBm〕','−40〔dBm〕','−50〔dBm〕','−60〔dBm〕'],a:4,e:'電力＝電力密度×帯域幅＝5×10⁻¹⁵×200×10³＝1×10⁻⁹W＝1×10⁻⁶mW＝−60dBm。',k:'雑音電力＝密度×帯域幅→dBmへ。10⁻⁶mW＝−60dBm'},
+];
+/* 7月版②：答えは全問こちらで計算し、模擬の答えと一致を確認済み */
+const TEACHER_M72=[
+{id:'t72a02',no:'A-2',q:'LTE(SC-FDMA方式)の携帯無線通信について、誤っているものはどれか。',c:['陸上移動局→基地局はPAPR低減が可能なSC-FDMAを用い、送信電力増幅器の省電力化・低廉化ができる','基地局→陸上移動局はOFDM方式を用いる','OFDMはシングルキャリア変調に比べ、伝送速度そのままでシンボル長を長くでき、マルチパス遅延波によるシンボル間干渉を受けにくい','OFDMはシンボルの前半の一部を後半にコピーするCP(サイクリックプレフィックス)を付加して、伝送レートを向上させている','基地局→陸上移動局の回線で無線フレーム長を短縮すると、接続遅延や制御遅延の短縮ができ低遅延化できる'],a:3,e:'CPはシンボルの「後端」の一部を「先頭」にコピーするもので、冗長を足すぶん伝送レートは下がる（向上ではない）。遅延波耐性を得る仕組みなので誤り。',k:'CP＝後ろを先頭にコピー。レートは下がる（遅延波対策）'},
+{id:'t72a06',no:'A-6',q:'雑音指数4〔dB〕で有能利得14〔dB〕の高周波増幅器の入力端における雑音の有能電力（熱雑音電力）が−118〔dBm〕のとき、出力端における雑音の有能電力は？',c:['−86〔dBm〕','−96〔dBm〕','−100〔dBm〕','−104〔dBm〕','−108〔dBm〕'],a:2,e:'出力雑音＝入力雑音＋利得＋雑音指数（すべてdB）＝−118＋14＋4＝−100dBm。',k:'出力雑音[dBm]＝入力雑音＋利得＋NF（dBで足すだけ）'},
+];
+/* 版ごとのまとまり。順次追加していく */
+const TSETS={'7月①':TEACHER,'6月':TEACHER_M6,'5月':TEACHER_M5,'7月②':TEACHER_M72};
+function noNum(no){const m=(no||'').match(/(\d+)/);return m?+m[1]:0}
 let drill=null;
 function buildDrillSeq(){
  const seq=[];
@@ -1470,19 +1499,24 @@ function renderDrill(){
   <button class="act" onclick="startDrill()">▶ 最初から始める（A-1へ）</button>`;
 }
 function renderTeacher(){
+ const btns=Object.entries(TSETS).map(([k,arr])=>
+   `<button class="act ghost" style="margin:5px 0" onclick="startTeacher('${k}')">${k}版を解く（${arr.length}問）</button>`).join('');
  document.getElementById('teacher-area').innerHTML=`
   <p style="font-size:14px;margin:10px 0 4px">研修講師の予想問題を、1問ずつ<b>答え＋なぜその答えか（決め打ち解説）</b>つきで解いていきます。</p>
-  <p class="muted" style="margin:0 0 10px">2026年7月版・A問題 ${TEACHER.length}問（図つき／順次追加中）。</p>
-  <button class="act" onclick="startTeacher()">▶ 講師予想を解く</button>`;
+  <p class="muted" style="margin:0 0 10px">答えは全問こちらで検算し、模擬の答えと一致を確認済み。図つき／順次追加中。</p>
+  ${btns}`;
 }
-function buildTeacherSeq(){return TEACHER.map(q=>({type:'A',q,slot:q.no}))}
-function startDrill(mode){
+function buildTeacherSeq(key){
+ const arr=(TSETS[key]||[]).slice().sort((a,b)=>noNum(a.no)-noNum(b.no));
+ return arr.map(q=>({type:'A',q,slot:q.no}));
+}
+function startDrill(mode,key){
  mode=mode||'exam';
- const seq=mode==='teacher'?buildTeacherSeq():buildDrillSeq();
- drill={seq,idx:0,tf:[],mode,area:mode==='teacher'?'teacher-area':'drill-area'};
+ const seq=mode==='teacher'?buildTeacherSeq(key):buildDrillSeq();
+ drill={seq,idx:0,tf:[],mode,setKey:key,area:mode==='teacher'?'teacher-area':'drill-area'};
  drillRender();
 }
-function startTeacher(){startDrill('teacher')}
+function startTeacher(key){startDrill('teacher',key)}
 function quitDrill(){const m=drill?drill.mode:'exam';drill=null;m==='teacher'?renderTeacher():renderDrill();window.scrollTo(0,0)}
 function drillBar(){const t=drill.seq.length;return `<div class="mockbar"><div class="fill" style="width:${drill.idx/t*100}%"></div></div>`}
 function drillHead(){
@@ -1565,11 +1599,12 @@ function drillNext(){
  drill.idx++;
  if(drill.idx<drill.seq.length){drillRender()}
  else{
-   const area=drill.area, mode=drill.mode; drill=null;
+   const area=drill.area, mode=drill.mode, key=drill.setKey; drill=null;
    document.getElementById(area).innerHTML=`
-    <div class="verdict pass">🎉 1周おつかれさま！<br>${mode==='teacher'?'講師予想、ぜんぶ見た！':'本番の流れはこれでバッチリ'}</div>
-    <p class="muted">${mode==='teacher'?'2周目は答えを隠して。決め打ち解説を思い出せるかチェック。':'同じ問題でも、2周目は答えを隠して解けるか試そう。仕上げは「模試」タブで125点形式に挑戦。'}</p>
-    <button class="act" onclick="${mode==='teacher'?'startTeacher()':'startDrill()'}">▶ もう1周する</button>`;
+    <div class="verdict pass">🎉 1周おつかれさま！<br>${mode==='teacher'?(key+'版、ぜんぶ見た！'):'本番の流れはこれでバッチリ'}</div>
+    <p class="muted">${mode==='teacher'?'2周目は答えを隠して。決め打ち解説を思い出せるかチェック。他の版もどうぞ。':'同じ問題でも、2周目は答えを隠して解けるか試そう。仕上げは「模試」タブで125点形式に挑戦。'}</p>
+    <button class="act" onclick="${mode==='teacher'?`startTeacher('${key}')`:'startDrill()'}">▶ もう1周する</button>
+    ${mode==='teacher'?'<button class="act ghost" style="margin-top:8px" onclick="renderTeacher()">← 版をえらぶ</button>':''}`;
    window.scrollTo(0,0);
  }
 }
