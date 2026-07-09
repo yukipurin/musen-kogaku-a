@@ -1871,9 +1871,27 @@ function drillNext(){
  }
 }
 
-/* ===== PWA：ホーム画面アプリ化（HTTPSのときだけ有効。file://や非対応では黙ってスキップ） ===== */
+/* ===== PWA：ホーム画面アプリ化（HTTPSのときだけ有効。file://や非対応では黙ってスキップ） =====
+   スマホで更新が反映されない問題の対策：新しいSWが見つかったら即座に有効化してリロードする。 */
 if('serviceWorker'in navigator&&location.protocol==='https:'){
- window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+ window.addEventListener('load',()=>{
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update(); // 開くたびに更新確認を強制
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      if(!nw)return;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed'&&navigator.serviceWorker.controller){
+          nw.postMessage('SKIP_WAITING');
+        }
+      });
+    });
+  }).catch(()=>{});
+  let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(reloaded)return; reloaded=true; location.reload();
+  });
+ });
 }
 
 /* ===== init ===== */
