@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>同期のカンペ（未検証・原文まま）</title>
+<style>
+  :root{
+    --bg:#070b16; --card:rgba(255,255,255,.055); --card2:rgba(255,255,255,.09);
+    --ink:#eef3fc; --sub:#9aabc6;
+    --accent:#22d3ee; --accent2:#a855f7; --good:#34d399; --bad:#fb7185; --warn:#fbbf24;
+    --line:rgba(255,255,255,.11);
+    --grad:linear-gradient(135deg,#22d3ee 0%,#6366f1 52%,#d946ef 100%);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:-apple-system,"Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;position:relative;min-height:100vh;
+    padding-bottom:40px}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(48% 38% at 10% 6%, rgba(34,211,238,.16), transparent 70%),
+      radial-gradient(44% 34% at 92% 12%, rgba(168,85,247,.16), transparent 70%),
+      #070b16;}
+  header{position:sticky;top:0;z-index:10;padding:16px 16px 12px;border-bottom:1px solid var(--line);
+    background:rgba(7,11,22,.7);backdrop-filter:blur(18px) saturate(160%)}
+  h1{font-size:17px;margin:0;font-weight:800;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--sub);font-size:12px;margin-top:3px}
+  main{max-width:860px;margin:0 auto;padding:14px}
+  .warn-box{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.4);border-radius:16px;
+    padding:14px 16px;margin:14px 0;font-size:13.5px}
+  .warn-box b{color:#fecdd3}
+  .block{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin:14px 0}
+  .block h2{font-size:14px;margin:0 0 10px;color:var(--accent);font-weight:800}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+  .frag{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;
+    font-size:13px;white-space:pre-wrap}
+  .frag.formula{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px;color:#a7f3d0}
+  a.back{display:inline-block;margin-top:6px;color:var(--accent);text-decoration:none;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📝 同期のカンペ（未検証・原文まま）</h1>
+  <div class="sub">スクショから読み取った文字をそのまま列構成ごとに転記。答えの検証はしていません。</div>
+</header>
+<main>
+  <div class="warn-box">
+    ⚠️ <b>これは「答え確定済みカード」ではありません。</b>元の問題文・選択肢が分からない単語の断片をそのまま並べただけです。<br>
+    見て「あ、これ知ってる」と思い出すきっかけ用に。断片単体を鵜呑みにして暗記しないこと。<br>
+    正確な問題は <a href="./index.html">合格アプリ本体</a> の「🎓講師予想問題」（こちらは1問ずつ検算済み）を使ってください。
+  </div>
+
+  <div class="block">
+    <h2>画像1・列1</h2>
+    <div class="grid">
+      <div class="frag">長い周期／長く／fi-fs／低い周波数信号には適用できない</div>
+      <div class="frag">位相関係／最大の／70dB／内部雑音／高調波ひずみ</div>
+      <div class="frag">正弦波／標準信号発生器／20dB低い／20dB程度高い値／(3)</div>
+      <div class="frag">スペアナ／2〜3.5倍程度／和／0.5%／f2-f1</div>
+      <div class="frag">15Hz程度／正弦波／同じ／低周波発振器／3000Hz</div>
+      <div class="frag">無変調波／FM直線検波器／周波数偏移／可変減衰器1(ATT1)／D2-D1</div>
+      <div class="frag">伝送路／疑似ランダム／受信パルス列／同期した／一致又は不一致</div>
+      <div class="frag">識別器入力直前／できる／縦の開き／横の開き／大きくなる</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像1・列2</h2>
+    <div class="grid">
+      <div class="frag">符号誤り率／時間領域自動等化器／1ビット／相関成分／2次元化</div>
+      <div class="frag">通信用アンテナ／アップリンク／GaAsFET／太陽電池／平板状</div>
+      <div class="frag">変調器／周波数混合器／電力増幅器／低雑音増幅器／復調器</div>
+      <div class="frag">周波数／SCPC／時間／線形領域／ガードタイム／同時に共用</div>
+      <div class="frag">周波数分割／1つの／搬送波電力で割った／考慮する必要があるトランスポンダの利用効率向上★／通信容量が小さい★</div>
+      <div class="frag">［図］拡散符号発生部→周波数変換部（送信側）／周波数変換部→拡散復調部（受信側）／符号同期部</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像1・列3（公式）</h2>
+    <div class="grid">
+      <div class="frag formula">Z = R2 + (R1+RS)/2</div>
+      <div class="frag formula">Δf = ΔN/T ＝ 1/(10×10⁻³)　カウンタ</div>
+      <div class="frag formula">Rres = 150τ　距離分解能</div>
+      <div class="frag formula">PAV = PP × f × τ　レーダ平均電力</div>
+      <div class="frag formula">PCmax = (Vi max − Vo min) × IC max [W]</div>
+      <div class="frag formula">δ = (Vo−Vn)/Vn × 100 [%]　電圧変動率</div>
+      <div class="frag formula">v = fd・c/2f　　fd = 2vf/c</div>
+      <div class="frag formula">1/(1/(C/N₁)+1/(C/N₂)+1/(C/N₃)+1/(C/N₄))</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像1・列4（B問題）</h2>
+    <div class="grid">
+      <div class="frag">受信周波数／中間周波増幅装置／2倍／選択度を向上させる／下げる</div>
+      <div class="frag">単一／VBB／ひずむ／高調波成分／小さくする</div>
+      <div class="frag">小さい／電力効率／①／等しい／1kW</div>
+      <div class="frag formula">Pr = Pt − Lft + Gt − Z0 + Gr − Lfr [dBm]</div>
+      <div class="frag formula">C/N = Pt − N</div>
+      <div class="frag formula">PT = Pin + Gp − LM [dBm]</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像1・列5（B問題）</h2>
+    <div class="grid">
+      <div class="frag">同期検波／掛け算／BPF／1/2分周回路／変わらない</div>
+      <div class="frag">スペアナ測定／ケーブルの電気長／アンテナのインピーダンス／フィルタの位相特性／ベクアナ</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像2・列1</h2>
+    <div class="grid">
+      <div class="frag">副／不要／収まる／A100</div>
+      <div class="frag">振幅／副搬送波／45%</div>
+      <div class="frag">逆フーリエ／後／前／短い</div>
+      <div class="frag">可変調／MPEG2／高い</div>
+      <div class="frag formula">5m²/4　5.8　6.25</div>
+      <div class="frag formula">E(1+0.6cos pt)cos ωt [V]</div>
+      <div class="frag">kfb/ωs／変調指数／変化しない</div>
+      <div class="frag formula">ψ1(t)cos ωct　ψ1(t)　ψQ(t)</div>
+      <div class="frag">直並／逆フー／離フー／波直</div>
+      <div class="frag formula">T=1/ΔF　線形領域　長く　長く</div>
+      <div class="frag">π/2位相差／パルス繰り返し周期</div>
+      <div class="frag">B問題：和／差／振幅／副搬送波／同一の値</div>
+      <div class="frag">AM波のひとつ／1/2／有るとき／受け難い／抑圧</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像2・列2</h2>
+    <div class="grid">
+      <div class="frag">a1x+a2x²+a3x³／3次／2f1-f2及び2f2-f1</div>
+      <div class="frag">規定の信号対雑音比(S/N)の下で規定の信号出力／弱い／小さい</div>
+      <div class="frag">中間周波数／局部発振〜低い</div>
+      <div class="frag">非直線動作／fu</div>
+      <div class="frag">相互変調及び混変調による混信妨害は、受信機の入力レベルを下げることにより軽減できる</div>
+      <div class="frag">送信電力を4倍にし、アンテナの利得を2倍にする（誤り選択肢）</div>
+      <div class="frag">送信後／120μs</div>
+      <div class="frag">グライド・パスは水平偏波</div>
+      <div class="frag">高度／三次元／ドプラ効果</div>
+      <div class="frag">時間差／距離／不規則</div>
+      <div class="frag formula">B問題：2ΔF/T[Hz/s]／(2ΔF/T)ΔT[Hz]／2h/c[s]／4ΔFh/(cT)[Hz]／cTΔf/(4ΔF)[m]</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像2・列3</h2>
+    <div class="grid">
+      <div class="frag">全波整流／√2/3／1/(6√2ω²LC)</div>
+      <div class="frag">Tr2／増加／減少</div>
+      <div class="frag">信号発生器／パルス幅／導通</div>
+      <div class="frag">交流／直流／交流</div>
+      <div class="frag">炭素質材料／メモリ効果／大きく</div>
+      <div class="frag">遅延回路／広い／バックオフを必要とする</div>
+      <div class="frag">送信側／多重化できる</div>
+      <div class="frag">時間領域／1ビットずつ／相関</div>
+      <div class="frag">原子／1.5／スペクトル拡散</div>
+      <div class="frag">DGPSが間違い（マルチパス誤差は補正できない）</div>
+      <div class="frag">他の信号の干渉／ブロック符号／冗長度が大きくなる</div>
+      <div class="frag">検査ビット／d／2t+1／t個以下</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像2・列4</h2>
+    <div class="grid">
+      <div class="frag">以下／非再生中継／累積されない</div>
+      <div class="frag">直接拡散方式／受け難い／狭帯域</div>
+      <div class="frag">周波数シンセサイザ／拡散復調部／拡散符号発生部</div>
+      <div class="frag">中継ルートをジグザグに設定してアンテナの指向性を利用することが多い</div>
+      <div class="frag">波形ひずみ等が累積されない（正生中継方式の誤り選択肢の訂正）</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像2・列5</h2>
+    <div class="grid">
+      <div class="frag">正弦波→√3/2／三角波→√3</div>
+      <div class="frag">2R1／e/2／6dB</div>
+      <div class="frag">減衰器／CT=(C+Ci)Ri/R／方形波</div>
+      <div class="frag">長い周期／長く／fi-fs／信号には適用できない</div>
+      <div class="frag">A-D変換器／周波数領域／位相／N/T／同期していない／補正できない</div>
+      <div class="frag formula">10mW: 117dBμV／123dBμV
+20mW: 120dBμV／126dBμV
+50mW: 124／130
+100mW: 127／133</div>
+      <div class="frag">SGの電圧と電力／周波数／周波数変調／電圧同調形局部発振器／IFフィルタ</div>
+      <div class="frag">を超えている／許容値以下である／範囲に含まれる</div>
+      <div class="frag">正弦波／スペクトルアナライザ／可変減衰器／飽和／尖頭電力</div>
+      <div class="frag">搬送波／振幅／零／mfFm[Hz]</div>
+      <div class="frag">FM直線検波器／周波数偏移／D2-D1</div>
+      <div class="frag">雑音／クロック／大きく</div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>画像3</h2>
+    <div class="grid">
+      <div class="frag">実時間サンプリング／サンプリング周波数の1/2まで</div>
+    </div>
+  </div>
+
+  <a class="back" href="./index.html">← 合格アプリ本体にもどる</a>
+</main>
+</body>
+</html>
